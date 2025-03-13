@@ -12,8 +12,10 @@ import {
   Settings, 
   Menu,
   List,
-  Clock
+  Clock,
+  Bell
 } from 'lucide-react';
+import { useNotifications } from '@/contexts/NotificationContext';
 
 interface NavigationItem {
   name: string;
@@ -25,6 +27,7 @@ const navigation: NavigationItem[] = [
   { name: 'Tableau de bord', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Toutes les listes', href: '/lists', icon: List },
   { name: 'Listes en cours', href: '/lists?tab=active', icon: Clock },
+  { name: 'Notifications', href: '/notifications', icon: Bell },
   { name: 'Péremptions', href: '/manage-expirations', icon: AlertCircle },
   { name: 'Paramètres', href: '/settings', icon: Settings },
 ];
@@ -36,6 +39,7 @@ interface SidebarProps {
 
 export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
   const pathname = usePathname();
+  const { notificationCount, showBadges } = useNotifications();
 
   return (
     <div className={cn(
@@ -64,6 +68,9 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
           const isActive = item.href.includes('?') 
             ? pathname === item.href.split('?')[0] && item.href.includes(pathname + '?')
             : pathname === item.href;
+          
+          // Vérifier si c'est l'élément de notifications
+          const isNotificationItem = item.href === '/notifications';
             
           return (
             <Link
@@ -75,7 +82,21 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
               )}
             >
               <Icon className="h-5 w-5" />
-              {!isCollapsed && <span>{item.name}</span>}
+              {!isCollapsed && (
+                <>
+                  <span>{item.name}</span>
+                  {isNotificationItem && showBadges && notificationCount > 0 && (
+                    <span className="ml-auto bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[1.25rem] text-center">
+                      {notificationCount}
+                    </span>
+                  )}
+                </>
+              )}
+              {isCollapsed && isNotificationItem && showBadges && notificationCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                  {notificationCount}
+                </span>
+              )}
             </Link>
           );
         })}

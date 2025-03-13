@@ -115,6 +115,16 @@ Dans la section "Paramètres", vous pouvez :
 - Configurer les notifications pour les produits bientôt périmés
 - Gérer votre compte utilisateur
 
+### Personnalisation des notifications
+
+Dans l'onglet "Notifications" des paramètres, vous pouvez :
+- Activer/désactiver l'affichage des badges de notification à côté de l'icône de cloche
+- Configurer les alertes de péremption pour être informé des produits qui arrivent à expiration
+- Activer/désactiver les rappels de courses pour les achats récurrents
+- Gérer les notifications par email
+
+Les badges de notification vous permettent de voir en un coup d'œil combien de notifications non lues vous avez. Si vous préférez une interface plus épurée, vous pouvez désactiver cette fonctionnalité tout en continuant à recevoir des notifications dans le centre de notifications.
+
 ## Astuces et Conseils
 
 - Utilisez la fonction de recherche pour trouver rapidement des listes ou des produits

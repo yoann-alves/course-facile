@@ -50,7 +50,6 @@ export default function ShoppingListCard({
                 <div>
                   <CardTitle className="flex items-center gap-2">
                     {title}
-                    <span className="text-sm font-normal text-gray-400">#{id.slice(0, 4)}</span>
                   </CardTitle>
                   <CardDescription>
                     Créée le {new Date(createdAt).toLocaleDateString('fr-FR')}

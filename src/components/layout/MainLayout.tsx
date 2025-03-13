@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Menu, X, Home, Calendar, Settings, List } from 'lucide-react';
+import { Menu, X, Home, Calendar, Settings, List, Bell } from 'lucide-react';
+import { useNotifications } from '@/contexts/NotificationContext';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -10,6 +11,7 @@ interface MainLayoutProps {
 
 export default function MainLayout({ children }: MainLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { notificationCount, showBadges } = useNotifications();
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -52,6 +54,19 @@ export default function MainLayout({ children }: MainLayoutProps) {
               <Link href="/lists" className="flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-green-50 hover:text-green-700">
                 <List className="w-5 h-5 mr-3" />
                 Toutes les listes
+              </Link>
+            </li>
+            <li>
+              <Link href="/notifications" className="flex items-center justify-between px-4 py-2 text-gray-700 rounded-md hover:bg-green-50 hover:text-green-700">
+                <div className="flex items-center">
+                  <Bell className="w-5 h-5 mr-3" />
+                  Notifications
+                </div>
+                {showBadges && notificationCount > 0 && (
+                  <span className="bg-red-500 text-white text-xs rounded-full px-1.5 py-0.5 min-w-[1.25rem] text-center">
+                    {notificationCount}
+                  </span>
+                )}
               </Link>
             </li>
             <li>

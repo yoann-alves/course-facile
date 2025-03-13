@@ -2,12 +2,16 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Plus, AlertTriangle } from 'lucide-react';
+import { 
+  Plus, 
+  Copy, 
+  ListChecks, 
+  Settings
+} from 'lucide-react';
 import MainLayout from '@/components/layout/MainLayout';
 import ShoppingListCard from '@/components/ShoppingListCard';
-import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { shoppingLists, getCompletedItemCount } from '@/data/shopping-lists';
-import { expirationItems, isExpiringSoon, isExpired } from '@/data/expiration-items';
 
 export default function DashboardPage() {
   // Simuler la suppression d'une liste
@@ -15,10 +19,46 @@ export default function DashboardPage() {
     console.log(`Suppression de la liste ${id}`);
     // Dans une vraie application, nous supprimerions la liste ici
   };
-
-  // Filtrer les produits qui expirent bientôt ou sont expirés
-  const expiringSoonItems = expirationItems.filter(item => isExpiringSoon(item));
-  const expiredItems = expirationItems.filter(item => isExpired(item));
+  
+  // Définir les raccourcis rapides
+  const quickActions = [
+    {
+      id: 'new-list',
+      title: 'Nouvelle liste',
+      description: 'Créer une nouvelle liste de courses',
+      icon: Plus,
+      bgColor: 'bg-green-100',
+      iconColor: 'text-green-600',
+      href: '/create-list'
+    },
+    {
+      id: 'duplicate-list',
+      title: 'Dupliquer',
+      description: 'Copier une liste existante',
+      icon: Copy,
+      bgColor: 'bg-blue-100',
+      iconColor: 'text-blue-600',
+      href: '/create-list?tab=duplicate'
+    },
+    {
+      id: 'all-lists',
+      title: 'Toutes les listes',
+      description: 'Voir toutes vos listes',
+      icon: ListChecks,
+      bgColor: 'bg-purple-100',
+      iconColor: 'text-purple-600',
+      href: '/lists'
+    },
+    {
+      id: 'settings',
+      title: 'Paramètres',
+      description: 'Configurer l\'application',
+      icon: Settings,
+      bgColor: 'bg-gray-100',
+      iconColor: 'text-gray-600',
+      href: '/settings'
+    }
+  ];
 
   return (
     <MainLayout>
@@ -26,42 +66,24 @@ export default function DashboardPage() {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold text-gray-900">Tableau de bord</h1>
-            <Link href="/create-list">
-              <Button>
-                <Plus className="w-4 h-4 mr-2" />
-                Nouvelle liste
-              </Button>
-            </Link>
           </div>
 
-          {/* Notifications de péremption */}
-          {(expiringSoonItems.length > 0 || expiredItems.length > 0) && (
-            <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
-              <div className="flex items-center mb-2">
-                <AlertTriangle className="w-5 h-5 text-amber-500 mr-2" />
-                <h2 className="text-lg font-semibold text-amber-700">Alertes de péremption</h2>
-              </div>
-              <ul className="space-y-2">
-                {expiredItems.map(item => (
-                  <li key={item.id} className="text-red-600 text-sm">
-                    {item.name} ({item.quantity} {item.unit}) - <span className="font-semibold">EXPIRÉ</span>
-                  </li>
-                ))}
-                {expiringSoonItems.map(item => (
-                  <li key={item.id} className="text-amber-600 text-sm">
-                    {item.name} ({item.quantity} {item.unit}) - Expire le {new Date(item.expirationDate).toLocaleDateString('fr-FR')}
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-3">
-                <Link href="/manage-expirations">
-                  <Button variant="outline" size="sm">
-                    Gérer les péremptions
-                  </Button>
-                </Link>
-              </div>
-            </div>
-          )}
+          {/* Raccourcis rapides */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {quickActions.map((action) => (
+              <Link key={action.id} href={action.href} className="block">
+                <Card className="hover:shadow-md transition-shadow border-transparent hover:border-gray-200">
+                  <div className="p-4 flex flex-col items-center text-center">
+                    <div className={`${action.bgColor} p-3 rounded-full mb-3`}>
+                      {React.createElement(action.icon, { className: `w-6 h-6 ${action.iconColor}` })}
+                    </div>
+                    <h3 className="font-medium text-gray-800">{action.title}</h3>
+                    <p className="text-xs text-gray-500 mt-1">{action.description}</p>
+                  </div>
+                </Card>
+              </Link>
+            ))}
+          </div>
 
           {/* Listes de courses */}
           <div>
