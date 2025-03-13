@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useContext } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { 
   ArrowLeft,
@@ -19,12 +19,18 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ToastContext } from '@/components/ui/toast';
-import { shoppingLists, frequentProducts } from '@/data/shopping-lists';
-import { generateId, formatDate } from '@/lib/utils';
+import { frequentProducts } from '@/data/shopping-lists';
+import { generateId } from '@/lib/utils';
+import { useShoppingLists } from '@/contexts/ShoppingListContext';
 
 export default function CreateListPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { showToast } = useContext(ToastContext);
+  const { addList, lists } = useShoppingLists();
+  
+  // Récupérer l'onglet initial depuis les paramètres d'URL
+  const initialTab = searchParams.get('tab') || 'search';
   
   // État du formulaire
   const [title, setTitle] = useState('');
@@ -104,7 +110,7 @@ export default function CreateListPage() {
   };
   
   // Dupliquer une liste existante
-  const handleDuplicateList = (list: typeof shoppingLists[0]) => {
+  const handleDuplicateList = (list: typeof lists[0]) => {
     setTitle(`Copie de ${list.title}`);
     setSelectedProducts(list.items.map(item => ({
       name: item.name,
@@ -115,40 +121,46 @@ export default function CreateListPage() {
     showToast('Liste dupliquée', 'success');
   };
   
-  // Créer la liste
+  // Fonction pour créer une nouvelle liste
   const handleCreateList = async () => {
-    if (!title) {
+    if (!title.trim()) {
       showToast('Veuillez donner un titre à votre liste', 'error');
       return;
     }
     
-    showToast('Création de la liste...', 'loading');
-    
     try {
-      // Simulation d'un délai réseau
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // Afficher un toast de chargement
+      showToast('Création de votre liste...', 'loading');
       
-      // Création d'un ID aléatoire pour la liste
-      const newListId = generateId('list');
-      
-      // Création d'IDs aléatoires pour chaque produit
-      const productsWithIds = selectedProducts.map(product => ({
-        ...product,
-        id: generateId('item'),
+      // Créer les items de la liste
+      const items = selectedProducts.map(product => ({
+        id: `item-${generateId()}`,
+        name: product.name,
+        quantity: product.quantity,
+        unit: product.unit,
+        category: product.category,
         checked: false
       }));
       
-      console.log('Nouvelle liste créée avec ID:', newListId);
-      console.log('Produits avec IDs:', productsWithIds);
+      // Ajouter la liste via le contexte
+      const newListId = addList({
+        title: title.trim(),
+        items,
+        completed: false
+      });
       
-      showToast('Liste créée avec succès', 'success');
+      console.log('Nouvelle liste créée:', newListId);
       
-      // Redirection vers la nouvelle liste
+      // Afficher un toast de succès
+      showToast('Liste créée avec succès !', 'success');
+      
+      // Rediriger vers la liste créée
       setTimeout(() => {
         router.push(`/lists/${newListId}`);
-      }, 500);
-    } catch {
-      showToast('Erreur lors de la création', 'error');
+      }, 1000);
+    } catch (error) {
+      console.error('Erreur lors de la création de la liste:', error);
+      showToast('Une erreur est survenue lors de la création de la liste', 'error');
     }
   };
 
@@ -167,10 +179,10 @@ export default function CreateListPage() {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center">
-              <Link href="/lists" className="mr-4">
+              <Link href="/dashboard" className="mr-4">
                 <Button variant="ghost" size="sm">
                   <ArrowLeft className="w-4 h-4 mr-2" />
-                  Retour aux listes
+                  Retour au tableau de bord
                 </Button>
               </Link>
               <h1 className="text-2xl font-bold text-gray-900">Créer une liste</h1>
@@ -202,7 +214,7 @@ export default function CreateListPage() {
                       </div>
                       
                       {/* Onglets */}
-                      <Tabs defaultValue="search" className="w-full">
+                      <Tabs defaultValue={initialTab} className="w-full">
                         <TabsList className="flex w-full border-b mb-4 bg-transparent p-0 space-x-2">
                           <TabsTrigger 
                             value="search" 
@@ -330,13 +342,13 @@ export default function CreateListPage() {
                             Dupliquer une liste existante
                           </h3>
                           <div className="border rounded-md overflow-hidden">
-                            {shoppingLists.length === 0 ? (
+                            {lists.length === 0 ? (
                               <div className="p-4 text-center text-gray-500">
                                 Aucune liste existante
                               </div>
                             ) : (
                               <div className="max-h-[200px] overflow-y-auto">
-                                {shoppingLists.map((list) => (
+                                {lists.map((list) => (
                                   <div 
                                     key={list.id}
                                     className="flex items-center justify-between p-3 hover:bg-gray-50 border-b last:border-b-0 cursor-pointer"
@@ -345,7 +357,7 @@ export default function CreateListPage() {
                                     <div>
                                       <span className="font-medium">{list.title}</span>
                                       <div className="text-xs text-gray-500">
-                                        {list.items.length} articles • Créée le {formatDate(list.createdAt)}
+                                        {list.items.length} articles • Créée le {new Date(list.createdAt).toLocaleDateString('fr-FR')}
                                       </div>
                                     </div>
                                     <div className="flex items-center px-2 py-1 rounded-md hover:bg-green-50">

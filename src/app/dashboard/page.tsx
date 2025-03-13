@@ -11,13 +11,16 @@ import {
 import MainLayout from '@/components/layout/MainLayout';
 import ShoppingListCard from '@/components/ShoppingListCard';
 import { Card } from '@/components/ui/card';
-import { shoppingLists, getCompletedItemCount } from '@/data/shopping-lists';
+import { getCompletedItemCount } from '@/data/shopping-lists';
+import { useShoppingLists } from '@/contexts/ShoppingListContext';
 
 export default function DashboardPage() {
-  // Simuler la suppression d'une liste
+  const { lists, deleteList } = useShoppingLists();
+  
+  // Gérer la suppression d'une liste
   const handleDeleteList = (id: string) => {
-    console.log(`Suppression de la liste ${id}`);
-    // Dans une vraie application, nous supprimerions la liste ici
+    console.log('Suppression de la liste depuis le dashboard:', id);
+    deleteList(id);
   };
   
   // Définir les raccourcis rapides
@@ -52,7 +55,7 @@ export default function DashboardPage() {
     {
       id: 'settings',
       title: 'Paramètres',
-      description: 'Configurer l\'application',
+      description: 'Configurer l&apos;application',
       icon: Settings,
       bgColor: 'bg-gray-100',
       iconColor: 'text-gray-600',
@@ -88,19 +91,28 @@ export default function DashboardPage() {
           {/* Listes de courses */}
           <div>
             <h2 className="text-xl font-semibold text-gray-800 mb-4">Mes listes de courses</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {shoppingLists.map(list => (
-                <ShoppingListCard
-                  key={list.id}
-                  id={list.id}
-                  title={list.title}
-                  itemCount={list.items.length}
-                  completedCount={getCompletedItemCount(list)}
-                  createdAt={list.createdAt}
-                  onDelete={handleDeleteList}
-                />
-              ))}
-            </div>
+            {lists.length === 0 ? (
+              <div className="text-center py-10 bg-gray-50 rounded-lg">
+                <p className="text-gray-500">Vous n&apos;avez pas encore de liste de courses.</p>
+                <Link href="/create-list" className="mt-4 inline-block text-green-600 hover:text-green-700">
+                  Créer votre première liste
+                </Link>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {lists.map(list => (
+                  <ShoppingListCard
+                    key={list.id}
+                    id={list.id}
+                    title={list.title}
+                    itemCount={list.items.length}
+                    completedCount={getCompletedItemCount(list)}
+                    createdAt={list.createdAt}
+                    onDelete={handleDeleteList}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>

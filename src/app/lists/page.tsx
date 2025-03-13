@@ -6,16 +6,17 @@ import MainLayout from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { shoppingLists } from '@/data/shopping-lists';
 import { ToastContext } from '@/components/ui/toast';
 import { cn } from '@/lib/utils';
 import ShoppingListCard from '@/components/ShoppingListCard';
 import Link from 'next/link';
+import { useShoppingLists } from '@/contexts/ShoppingListContext';
 
 type TabOption = 'all' | 'active' | 'completed';
 
 export default function ListsPage() {
   const { showToast } = useContext(ToastContext);
+  const { lists, deleteList } = useShoppingLists();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [activeTab, setActiveTab] = useState<TabOption>('all');
@@ -28,7 +29,7 @@ export default function ListsPage() {
   ];
 
   // Filtrage des listes
-  const filteredLists = shoppingLists.filter(list => {
+  const filteredLists = lists.filter(list => {
     const matchesSearch = list.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       list.items.some(item => item.name.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesTab = activeTab === 'all' || 
@@ -53,11 +54,11 @@ export default function ListsPage() {
         // Simulation d'un délai réseau
         await new Promise(resolve => setTimeout(resolve, 1000));
         
-        // Logique de suppression à implémenter
-        console.log(`Liste ${listId} supprimée`);
+        // Utiliser la fonction deleteList du contexte
+        deleteList(listId);
         
         showToast('Liste supprimée avec succès', 'success');
-      } catch (error) {
+      } catch {
         showToast('Erreur lors de la suppression', 'error');
       }
     }
