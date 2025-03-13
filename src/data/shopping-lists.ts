@@ -14,7 +14,65 @@ export interface ShoppingList {
   createdAt: string;
   updatedAt: string;
   items: ShoppingListItem[];
+  completed: boolean;
 }
+
+// Produits fréquemment achetés par catégorie
+export const frequentProducts: Record<string, Array<{ name: string; unit: string }>> = {
+  "Produits laitiers": [
+    { name: "Lait", unit: "L" },
+    { name: "Yaourt nature", unit: "pièces" },
+    { name: "Fromage râpé", unit: "g" },
+    { name: "Beurre", unit: "g" },
+    { name: "Crème fraîche", unit: "ml" }
+  ],
+  "Boulangerie": [
+    { name: "Pain", unit: "pièce" },
+    { name: "Baguette", unit: "pièce" },
+    { name: "Croissants", unit: "pièces" }
+  ],
+  "Fruits et légumes": [
+    { name: "Pommes", unit: "kg" },
+    { name: "Bananes", unit: "kg" },
+    { name: "Carottes", unit: "kg" },
+    { name: "Tomates", unit: "kg" },
+    { name: "Salade", unit: "pièce" }
+  ],
+  "Viandes": [
+    { name: "Poulet", unit: "kg" },
+    { name: "Steak haché", unit: "g" },
+    { name: "Jambon", unit: "tranches" }
+  ],
+  "Entretien": [
+    { name: "Lessive", unit: "L" },
+    { name: "Liquide vaisselle", unit: "ml" },
+    { name: "Éponges", unit: "pièces" }
+  ]
+};
+
+// Unités communes pour les suggestions
+export const commonUnits = [
+  "pièce",
+  "pièces",
+  "kg",
+  "g",
+  "L",
+  "ml",
+  "tranches",
+  "bouteille",
+  "paquet",
+  "boîte"
+];
+
+// Liste des derniers produits utilisés (simulé)
+export const recentProducts = [
+  { name: "Lait", unit: "L", category: "Produits laitiers" },
+  { name: "Pain", unit: "pièce", category: "Boulangerie" },
+  { name: "Œufs", unit: "boîte", category: "Produits laitiers" },
+  { name: "Yaourt", unit: "pièces", category: "Produits laitiers" },
+  { name: "Pommes", unit: "kg", category: "Fruits et légumes" },
+  { name: "Pâtes", unit: "paquet", category: "Épicerie" }
+];
 
 export const shoppingLists: ShoppingList[] = [
   {
@@ -29,7 +87,7 @@ export const shoppingLists: ShoppingList[] = [
         quantity: 2,
         unit: "L",
         category: "Produits laitiers",
-        checked: false,
+        checked: true,
         price: 1.99
       },
       {
@@ -38,7 +96,7 @@ export const shoppingLists: ShoppingList[] = [
         quantity: 1,
         unit: "pièce",
         category: "Boulangerie",
-        checked: false,
+        checked: true,
         price: 1.20
       },
       {
@@ -59,7 +117,8 @@ export const shoppingLists: ShoppingList[] = [
         checked: false,
         price: 2.30
       }
-    ]
+    ],
+    completed: false
   },
   {
     id: "2",
@@ -73,7 +132,7 @@ export const shoppingLists: ShoppingList[] = [
         quantity: 1,
         unit: "kg",
         category: "Viandes",
-        checked: false,
+        checked: true,
         price: 8.50
       },
       {
@@ -94,7 +153,8 @@ export const shoppingLists: ShoppingList[] = [
         checked: false,
         price: 1.20
       }
-    ]
+    ],
+    completed: false
   },
   {
     id: "3",
@@ -108,7 +168,7 @@ export const shoppingLists: ShoppingList[] = [
         quantity: 1,
         unit: "bouteille",
         category: "Entretien",
-        checked: false,
+        checked: true,
         price: 5.99
       },
       {
@@ -117,7 +177,7 @@ export const shoppingLists: ShoppingList[] = [
         quantity: 1,
         unit: "bouteille",
         category: "Entretien",
-        checked: false,
+        checked: true,
         price: 2.49
       },
       {
@@ -126,12 +186,18 @@ export const shoppingLists: ShoppingList[] = [
         quantity: 3,
         unit: "pièces",
         category: "Entretien",
-        checked: false,
+        checked: true,
         price: 1.99
       }
-    ]
+    ],
+    completed: false
   }
 ];
+
+// Fonction utilitaire pour calculer le nombre d'articles complétés dans une liste
+export function getCompletedItemCount(list: ShoppingList): number {
+  return list.items.filter(item => item.checked).length;
+}
 
 export const categories = [
   "Produits laitiers",

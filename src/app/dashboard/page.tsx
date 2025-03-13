@@ -6,7 +6,7 @@ import { Plus, AlertTriangle } from 'lucide-react';
 import MainLayout from '@/components/layout/MainLayout';
 import ShoppingListCard from '@/components/ShoppingListCard';
 import { Button } from '@/components/ui/button';
-import { shoppingLists } from '@/data/shopping-lists';
+import { shoppingLists, getCompletedItemCount } from '@/data/shopping-lists';
 import { expirationItems, isExpiringSoon, isExpired } from '@/data/expiration-items';
 
 export default function DashboardPage() {
@@ -72,6 +72,7 @@ export default function DashboardPage() {
                 id={list.id}
                 title={list.title}
                 itemCount={list.items.length}
+                completedCount={getCompletedItemCount(list)}
                 createdAt={list.createdAt}
                 onDelete={handleDeleteList}
               />
