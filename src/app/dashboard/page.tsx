@@ -13,6 +13,7 @@ import ShoppingListCard from '@/components/ShoppingListCard';
 import { Card } from '@/components/ui/card';
 import { getCompletedItemCount } from '@/data/shopping-lists';
 import { useShoppingLists } from '@/contexts/ShoppingListContext';
+import { Button } from '@/components/ui/button';
 
 export default function DashboardPage() {
   const { lists, deleteList } = useShoppingLists();
@@ -55,7 +56,7 @@ export default function DashboardPage() {
     {
       id: 'settings',
       title: 'Paramètres',
-      description: 'Configurer l&apos;application',
+      description: 'Configurer l\'application',
       icon: Settings,
       bgColor: 'bg-gray-100',
       iconColor: 'text-gray-600',
@@ -67,8 +68,14 @@ export default function DashboardPage() {
     <MainLayout>
       <div className="container mx-auto py-6 px-4">
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-900">Tableau de bord</h1>
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Tableau de bord</h1>
+            <Link href="/create-list">
+              <Button>
+                <Plus className="w-4 h-4 mr-2" />
+                Créer une liste
+              </Button>
+            </Link>
           </div>
 
           {/* Raccourcis rapides */}
@@ -80,8 +87,8 @@ export default function DashboardPage() {
                     <div className={`${action.bgColor} p-3 rounded-full mb-3`}>
                       {React.createElement(action.icon, { className: `w-6 h-6 ${action.iconColor}` })}
                     </div>
-                    <h3 className="font-medium text-gray-800">{action.title}</h3>
-                    <p className="text-xs text-gray-500 mt-1">{action.description}</p>
+                    <h3 className="font-medium text-gray-800 dark:text-gray-200">{action.title}</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{action.description}</p>
                   </div>
                 </Card>
               </Link>
@@ -90,7 +97,7 @@ export default function DashboardPage() {
 
           {/* Listes de courses */}
           <div>
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Mes listes de courses</h2>
+            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">Mes listes de courses</h2>
             {lists.length === 0 ? (
               <div className="text-center py-10 bg-gray-50 rounded-lg">
                 <p className="text-gray-500">Vous n&apos;avez pas encore de liste de courses.</p>

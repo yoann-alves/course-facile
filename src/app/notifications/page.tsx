@@ -80,7 +80,7 @@ export default function NotificationsPage() {
       <div className="container mx-auto py-6 px-4">
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-900">Centre de notifications</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Centre de notifications</h1>
             <div className="flex items-center">
               <span className="text-sm text-gray-500 mr-2">{notifications.length} notification{notifications.length > 1 ? 's' : ''}</span>
               {notifications.length > 0 && (
@@ -98,7 +98,7 @@ export default function NotificationsPage() {
                 <div className="bg-gray-100 p-4 rounded-full mb-4">
                   <Bell className="w-8 h-8 text-gray-400" />
                 </div>
-                <h2 className="text-xl font-medium text-gray-700 mb-2">Aucune notification</h2>
+                <h2 className="text-xl font-medium text-gray-700 dark:text-gray-200 mb-2">Aucune notification</h2>
                 <p className="text-gray-500 max-w-md mx-auto">
                   Vous n&apos;avez aucune notification pour le moment. Les alertes importantes apparaîtront ici.
                 </p>
@@ -115,7 +115,7 @@ export default function NotificationsPage() {
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-1">
-                          <h3 className="font-medium text-gray-800">{notification.title}</h3>
+                          <h3 className="font-medium text-gray-800 dark:text-gray-200">{notification.title}</h3>
                           <span className="text-xs text-gray-500">
                             {new Date(notification.date).toLocaleDateString('fr-FR', { 
                               day: 'numeric', 

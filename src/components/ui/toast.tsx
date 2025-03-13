@@ -14,17 +14,17 @@ interface ToastProps {
 }
 
 const toastIcons = {
-  success: <CheckCircle className="w-5 h-5 text-green-500" />,
-  error: <AlertCircle className="w-5 h-5 text-red-500" />,
-  info: <Info className="w-5 h-5 text-blue-500" />,
-  loading: <Loader2 className="w-5 h-5 text-gray-500 animate-spin" />
+  success: <CheckCircle className="w-5 h-5 text-green-500 dark:text-green-400" />,
+  error: <AlertCircle className="w-5 h-5 text-red-500 dark:text-red-400" />,
+  info: <Info className="w-5 h-5 text-blue-500 dark:text-blue-400" />,
+  loading: <Loader2 className="w-5 h-5 text-gray-500 dark:text-gray-400 animate-spin" />
 };
 
 const toastStyles = {
-  success: 'bg-green-50 border-green-200 text-green-800',
-  error: 'bg-red-50 border-red-200 text-red-800',
-  info: 'bg-blue-50 border-blue-200 text-blue-800',
-  loading: 'bg-gray-50 border-gray-200 text-gray-800'
+  success: 'bg-green-50 border-green-200 text-green-800 dark:bg-green-900/30 dark:border-green-800 dark:text-green-300',
+  error: 'bg-red-50 border-red-200 text-red-800 dark:bg-red-900/30 dark:border-red-800 dark:text-red-300',
+  info: 'bg-blue-50 border-blue-200 text-blue-800 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-300',
+  loading: 'bg-gray-50 border-gray-200 text-gray-800 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-300'
 };
 
 export function Toast({ message, type, onClose }: ToastProps) {
@@ -49,7 +49,7 @@ export function Toast({ message, type, onClose }: ToastProps) {
       {type !== 'loading' && (
         <button
           onClick={onClose}
-          className="ml-2 text-gray-500 hover:text-gray-700"
+          className="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
         >
           <X className="w-4 h-4" />
         </button>

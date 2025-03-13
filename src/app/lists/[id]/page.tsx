@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useContext, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
 import { 
   ArrowLeft, 
   Plus, 
@@ -28,16 +28,11 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-interface PageProps {
-  params: {
-    id: string;
-  };
-}
-
-export default function ShoppingListDetailPage({ params }: PageProps) {
+export default function ShoppingListDetailPage() {
   const router = useRouter();
+  const routeParams = useParams();
   const { showToast } = useContext(ToastContext);
-  const listId = params.id;
+  const listId = routeParams.id as string;
   const { getList, updateList, deleteList } = useShoppingLists();
   
   // État pour les dialogues
@@ -245,7 +240,7 @@ export default function ShoppingListDetailPage({ params }: PageProps) {
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Retour
               </Button>
-              <h1 className="text-2xl font-bold text-gray-900">{list.title}</h1>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{list.title}</h1>
             </div>
             
             <div className="flex items-center space-x-2">
@@ -305,9 +300,9 @@ export default function ShoppingListDetailPage({ params }: PageProps) {
                 )}
               </div>
               {!isEditMode && (
-                <div className="w-full bg-gray-200 rounded-full h-2.5 mt-2">
+                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 mt-2">
                   <div 
-                    className="bg-green-600 h-2.5 rounded-full" 
+                    className="bg-green-600 dark:bg-green-500 h-2.5 rounded-full" 
                     style={{ width: `${progress}%` }}
                   ></div>
                 </div>
@@ -315,7 +310,7 @@ export default function ShoppingListDetailPage({ params }: PageProps) {
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between mb-4">
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   <Clock className="w-4 h-4 inline mr-1" />
                   Créée le {formatDate(list.createdAt)}
                 </p>
@@ -329,7 +324,7 @@ export default function ShoppingListDetailPage({ params }: PageProps) {
                             type="text"
                             placeholder="Nom du produit"
                             name="itemName"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-800 dark:text-gray-100"
                           />
                         </div>
                         <div>
@@ -339,11 +334,11 @@ export default function ShoppingListDetailPage({ params }: PageProps) {
                               min="1"
                               placeholder="Qté"
                               name="itemQuantity"
-                              className="w-full px-3 py-2 border border-gray-300 rounded-l-md"
+                              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-l-md dark:bg-gray-800 dark:text-gray-100"
                             />
                             <select
                               name="itemUnit"
-                              className="px-2 py-2 border border-l-0 border-gray-300 rounded-r-md"
+                              className="px-2 py-2 border border-l-0 border-gray-300 dark:border-gray-600 rounded-r-md dark:bg-gray-800 dark:text-gray-100"
                             >
                               <option value="">Unité</option>
                               <option value="pièce">pièce</option>
@@ -357,7 +352,7 @@ export default function ShoppingListDetailPage({ params }: PageProps) {
                         <div className="flex">
                           <select
                             name="itemCategory"
-                            className="w-full px-3 py-2 border border-gray-300 rounded-l-md"
+                            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-l-md dark:bg-gray-800 dark:text-gray-100"
                           >
                             <option value="">Catégorie</option>
                             {productCategories.map(category => (
@@ -377,14 +372,16 @@ export default function ShoppingListDetailPage({ params }: PageProps) {
               {/* Mode Visualisation */}
               {!isEditMode && Object.entries(itemsByCategory).map(([category, items]) => (
                 <div key={category} className="mb-6">
-                  <h3 className="font-medium text-gray-900 mb-2">{category}</h3>
+                  <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-2">{category}</h3>
                   <div className="space-y-2">
                     {items.map(item => (
                       <div 
                         key={item.id} 
                         className={cn(
                           "flex items-center justify-between p-3 border rounded-lg",
-                          checkedItems[item.id] ? "bg-gray-50" : "bg-white"
+                          checkedItems[item.id] 
+                            ? "bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700" 
+                            : "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
                         )}
                       >
                         <div className="flex items-center">
@@ -394,20 +391,20 @@ export default function ShoppingListDetailPage({ params }: PageProps) {
                               "w-5 h-5 rounded-sm border mr-3 flex items-center justify-center",
                               checkedItems[item.id] 
                                 ? "bg-green-500 border-green-500" 
-                                : "border-gray-300"
+                                : "border-gray-300 dark:border-gray-600"
                             )}
                           >
                             {checkedItems[item.id] && <Check className="w-4 h-4 text-white" />}
                           </button>
                           <div className={cn(
-                            checkedItems[item.id] && "line-through text-gray-500"
+                            checkedItems[item.id] && "line-through text-gray-500 dark:text-gray-400"
                           )}>
                             <span className="font-medium">{item.name}</span>
-                            <span className="text-sm text-gray-500 ml-2">
+                            <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
                               {item.quantity} {item.unit}
                             </span>
                             {item.price && (
-                              <span className="text-sm text-gray-500 ml-2">
+                              <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
                                 • {item.price.toFixed(2)} €
                               </span>
                             )}
@@ -417,7 +414,7 @@ export default function ShoppingListDetailPage({ params }: PageProps) {
                           variant="ghost" 
                           size="sm"
                           onClick={() => handleDeleteItem(item.id)}
-                          className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                          className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20"
                         >
                           <Trash2 className="w-4 h-4" />
                         </Button>
@@ -430,21 +427,21 @@ export default function ShoppingListDetailPage({ params }: PageProps) {
               {/* Mode Édition */}
               {isEditMode && Object.entries(editableItemsByCategory).map(([category, items]) => (
                 <div key={category} className="mb-6">
-                  <h3 className="font-medium text-gray-900 mb-2">{category}</h3>
+                  <h3 className="font-medium text-gray-900 dark:text-gray-100 mb-2">{category}</h3>
                   <div className="space-y-2">
                     {items.map(item => (
                       <div 
                         key={item.id} 
-                        className="flex items-center justify-between p-3 border rounded-lg bg-white"
+                        className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-800"
                       >
                         <div className="flex items-center">
                           <div>
                             <span className="font-medium">{item.name}</span>
-                            <span className="text-sm text-gray-500 ml-2">
+                            <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
                               {item.quantity} {item.unit}
                             </span>
                             {item.price && (
-                              <span className="text-sm text-gray-500 ml-2">
+                              <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">
                                 • {item.price.toFixed(2)} €
                               </span>
                             )}
@@ -455,7 +452,7 @@ export default function ShoppingListDetailPage({ params }: PageProps) {
                             variant="ghost" 
                             size="sm"
                             onClick={() => handleDeleteItem(item.id)}
-                            className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/20"
                           >
                             <Trash2 className="w-4 h-4" />
                           </Button>
@@ -467,7 +464,7 @@ export default function ShoppingListDetailPage({ params }: PageProps) {
               ))}
               
               {list.items.length === 0 && !isEditMode && (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                   Cette liste ne contient aucun article.
                   <div className="mt-4">
                     <p className="mb-2">Utilisez le bouton &quot;Modifier&quot; en haut à droite pour ajouter des articles.</p>
@@ -476,7 +473,7 @@ export default function ShoppingListDetailPage({ params }: PageProps) {
               )}
               
               {editableItems.length === 0 && isEditMode && (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                   Cette liste ne contient aucun article.
                   <div className="mt-4">
                     <p className="mb-2">Ajoutez des articles à l&apos;aide du formulaire ci-dessus.</p>

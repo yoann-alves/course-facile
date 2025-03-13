@@ -1,8 +1,49 @@
 # Journal du Projet - Course Facile
 
-*Date de dernière mise à jour: 14/03/2024*
+*Date de dernière mise à jour: 15/03/2024*
 
 ## Historique des Modifications
+
+### 15/03/2024 - Implémentation du mode sombre
+- Création d'un `ThemeContext` pour gérer l'état du thème (clair, sombre, système)
+- Ajout d'un sélecteur de thème dans les paramètres
+- Adaptation de l'interface utilisateur pour le mode sombre
+- Persistance des préférences de thème dans `localStorage`
+- Synchronisation avec les préférences système lorsque le thème "système" est sélectionné
+- Gestion des avertissements liés aux paramètres
+
+### 15/03/2024 - Amélioration du mode sombre
+- Adaptation complète de tous les composants UI pour le mode sombre
+- Mise à jour des cartes et des éléments de liste pour une meilleure visibilité en mode sombre
+- Ajout de classes dark mode aux composants Badge, Button et Toast
+- Amélioration des contrastes et des couleurs pour une meilleure accessibilité
+- Adaptation des formulaires et des éléments interactifs pour le mode sombre
+- Harmonisation des styles entre les différentes pages de l'application
+
+### 15/03/2024 - Correction des problèmes de contraste en mode sombre
+- Correction des titres et textes qui n'étaient pas visibles en mode sombre
+- Ajout de classes dark:text-gray-100 et dark:text-gray-200 aux titres principaux
+- Ajout de classes dark:text-gray-300 et dark:text-gray-400 aux textes secondaires
+- Amélioration du contraste des éléments interactifs en mode sombre
+- Vérification et correction de tous les composants pour assurer une bonne lisibilité
+- Harmonisation des styles de survol avec dark:hover:text-gray-100 pour une meilleure visibilité
+
+### 15/03/2024 - Gestion des avertissements liés aux paramètres
+- Analyse des avertissements concernant l'accès direct aux propriétés de `params` dans les composants clients
+- Tentative d'utilisation de `React.use()` pour résoudre l'avertissement, mais cette approche génère des erreurs dans les composants clients
+- Implémentation d'une solution utilisant le hook `useParams()` de Next.js pour accéder aux paramètres de route dans les composants clients
+- Cette approche évite à la fois les avertissements liés à l'accès direct et les erreurs liées à l'utilisation de `React.use()`
+- Mise à jour de la documentation pour refléter cette décision technique
+
+### 15/03/2024 - Amélioration du processus de création de liste
+- Implémentation d'une modale de création rapide de liste accessible depuis la page "Toutes les listes"
+- Ajout de fonctionnalités pour créer une liste à partir de :
+  - Recherche de produits dans la base de données
+  - Sélection de produits récemment utilisés
+  - Duplication d'une liste existante
+- Simplification du flux utilisateur pour la création de liste
+- Suppression de l'onglet "Créer une liste" devenu redondant
+- Amélioration de l'expérience utilisateur avec un processus plus fluide et intuitif
 
 ### 14/03/2024 (Mise à jour UX)
 - Amélioration majeure de l'expérience utilisateur :

@@ -185,7 +185,7 @@ export default function CreateListPage() {
                   Retour au tableau de bord
                 </Button>
               </Link>
-              <h1 className="text-2xl font-bold text-gray-900">Créer une liste</h1>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Créer une liste</h1>
             </div>
           </div>
 
@@ -201,7 +201,7 @@ export default function CreateListPage() {
                     <CardContent className="space-y-6">
                       {/* Titre de la liste */}
                       <div>
-                        <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+                        <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                           Titre de la liste
                         </label>
                         <Input
@@ -218,21 +218,21 @@ export default function CreateListPage() {
                         <TabsList className="flex w-full border-b mb-4 bg-transparent p-0 space-x-2">
                           <TabsTrigger 
                             value="search" 
-                            className="flex items-center px-4 py-2 border-b-2 data-[state=active]:border-green-500 data-[state=active]:text-green-600 data-[state=inactive]:border-transparent data-[state=inactive]:text-gray-500 hover:text-gray-700 hover:border-gray-300 rounded-none bg-transparent shadow-none"
+                            className="flex items-center px-4 py-2 border-b-2 data-[state=active]:border-green-500 data-[state=active]:text-green-600 dark:data-[state=active]:text-green-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-gray-500 dark:data-[state=inactive]:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 rounded-none bg-transparent shadow-none"
                           >
                             <Search className="w-4 h-4 mr-2" />
                             Recherche
                           </TabsTrigger>
                           <TabsTrigger 
                             value="recent" 
-                            className="flex items-center px-4 py-2 border-b-2 data-[state=active]:border-green-500 data-[state=active]:text-green-600 data-[state=inactive]:border-transparent data-[state=inactive]:text-gray-500 hover:text-gray-700 hover:border-gray-300 rounded-none bg-transparent shadow-none"
+                            className="flex items-center px-4 py-2 border-b-2 data-[state=active]:border-green-500 data-[state=active]:text-green-600 dark:data-[state=active]:text-green-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-gray-500 dark:data-[state=inactive]:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 rounded-none bg-transparent shadow-none"
                           >
                             <Clock className="w-4 h-4 mr-2" />
                             Récents
                           </TabsTrigger>
                           <TabsTrigger 
                             value="duplicate" 
-                            className="flex items-center px-4 py-2 border-b-2 data-[state=active]:border-green-500 data-[state=active]:text-green-600 data-[state=inactive]:border-transparent data-[state=inactive]:text-gray-500 hover:text-gray-700 hover:border-gray-300 rounded-none bg-transparent shadow-none"
+                            className="flex items-center px-4 py-2 border-b-2 data-[state=active]:border-green-500 data-[state=active]:text-green-600 dark:data-[state=active]:text-green-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-gray-500 dark:data-[state=inactive]:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 rounded-none bg-transparent shadow-none"
                           >
                             <Copy className="w-4 h-4 mr-2" />
                             Dupliquer
@@ -242,7 +242,7 @@ export default function CreateListPage() {
                         {/* Onglet Recherche */}
                         <TabsContent value="search" className="space-y-4">
                           <div className="relative">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4" />
                             <Input
                               placeholder="Rechercher un produit..."
                               value={searchTerm}
@@ -252,9 +252,9 @@ export default function CreateListPage() {
                           </div>
                           
                           {searchTerm.length > 1 && (
-                            <div className="border rounded-md overflow-hidden">
+                            <div className="border dark:border-gray-700 rounded-md overflow-hidden">
                               {searchResults.length === 0 ? (
-                                <div className="p-4 text-center text-gray-500">
+                                <div className="p-4 text-center text-gray-500 dark:text-gray-400">
                                   Aucun résultat trouvé
                                 </div>
                               ) : (
@@ -262,17 +262,17 @@ export default function CreateListPage() {
                                   {searchResults.map((product, index) => (
                                     <div 
                                       key={index}
-                                      className="flex items-center justify-between p-3 hover:bg-gray-50 border-b last:border-b-0 cursor-pointer"
+                                      className="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-800/70 border-b dark:border-gray-700 last:border-b-0 cursor-pointer"
                                       onClick={() => handleAddProduct(product)}
                                     >
                                       <div>
                                         <span className="font-medium">{product.name}</span>
-                                        <span className="text-sm text-gray-500 ml-2">{product.unit}</span>
+                                        <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">{product.unit}</span>
                                       </div>
                                       <div className="flex items-center">
-                                        <span className="text-xs text-gray-500 mr-2">{product.category}</span>
-                                        <div className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-green-50">
-                                          <Plus className="h-4 w-4 text-green-600" />
+                                        <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">{product.category}</span>
+                                        <div className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-green-50 dark:hover:bg-green-900/30">
+                                          <Plus className="h-4 w-4 text-green-600 dark:text-green-400" />
                                         </div>
                                       </div>
                                     </div>
@@ -284,7 +284,7 @@ export default function CreateListPage() {
                           
                           {/* Produits favoris */}
                           <div>
-                            <h3 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+                            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
                               <Star className="w-4 h-4 text-amber-400 mr-1" />
                               Favoris
                             </h3>
@@ -292,14 +292,14 @@ export default function CreateListPage() {
                               {favoriteProducts.map((product, index) => (
                                 <div 
                                   key={index}
-                                  className="flex items-center justify-between p-2 border rounded-md hover:bg-gray-50 cursor-pointer"
+                                  className="flex items-center justify-between p-2 border dark:border-gray-700 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800/70 cursor-pointer"
                                   onClick={() => handleAddProduct(product)}
                                 >
                                   <div className="truncate">
                                     <span className="font-medium text-sm">{product.name}</span>
                                   </div>
-                                  <div className="h-7 w-7 flex items-center justify-center rounded-full hover:bg-green-50">
-                                    <Plus className="h-3 w-3 text-green-600" />
+                                  <div className="h-7 w-7 flex items-center justify-center rounded-full hover:bg-green-50 dark:hover:bg-green-900/30">
+                                    <Plus className="h-3 w-3 text-green-600 dark:text-green-400" />
                                   </div>
                                 </div>
                               ))}
@@ -309,25 +309,25 @@ export default function CreateListPage() {
                         
                         {/* Onglet Récents */}
                         <TabsContent value="recent" className="space-y-4">
-                          <h3 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+                          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
                             <Clock className="w-4 h-4 text-blue-500 mr-1" />
                             Produits récemment utilisés
                           </h3>
-                          <div className="border rounded-md overflow-hidden">
+                          <div className="border dark:border-gray-700 rounded-md overflow-hidden">
                             {recentProducts.map((product, index) => (
                               <div 
                                 key={index}
-                                className="flex items-center justify-between p-3 hover:bg-gray-50 border-b last:border-b-0 cursor-pointer"
+                                className="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-800/70 border-b dark:border-gray-700 last:border-b-0 cursor-pointer"
                                 onClick={() => handleAddProduct(product)}
                               >
                                 <div>
                                   <span className="font-medium">{product.name}</span>
-                                  <span className="text-sm text-gray-500 ml-2">{product.unit}</span>
+                                  <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">{product.unit}</span>
                                 </div>
                                 <div className="flex items-center">
-                                  <span className="text-xs text-gray-500 mr-2">{product.category}</span>
-                                  <div className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-green-50">
-                                    <Plus className="h-4 w-4 text-green-600" />
+                                  <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">{product.category}</span>
+                                  <div className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-green-50 dark:hover:bg-green-900/30">
+                                    <Plus className="h-4 w-4 text-green-600 dark:text-green-400" />
                                   </div>
                                 </div>
                               </div>
@@ -337,13 +337,13 @@ export default function CreateListPage() {
                         
                         {/* Onglet Dupliquer */}
                         <TabsContent value="duplicate" className="space-y-4">
-                          <h3 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+                          <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
                             <Copy className="w-4 h-4 text-green-500 mr-1" />
                             Dupliquer une liste existante
                           </h3>
-                          <div className="border rounded-md overflow-hidden">
+                          <div className="border dark:border-gray-700 rounded-md overflow-hidden">
                             {lists.length === 0 ? (
-                              <div className="p-4 text-center text-gray-500">
+                              <div className="p-4 text-center text-gray-500 dark:text-gray-400">
                                 Aucune liste existante
                               </div>
                             ) : (
@@ -351,18 +351,18 @@ export default function CreateListPage() {
                                 {lists.map((list) => (
                                   <div 
                                     key={list.id}
-                                    className="flex items-center justify-between p-3 hover:bg-gray-50 border-b last:border-b-0 cursor-pointer"
+                                    className="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-800/70 border-b dark:border-gray-700 last:border-b-0 cursor-pointer"
                                     onClick={() => handleDuplicateList(list)}
                                   >
                                     <div>
                                       <span className="font-medium">{list.title}</span>
-                                      <div className="text-xs text-gray-500">
+                                      <div className="text-xs text-gray-500 dark:text-gray-400">
                                         {list.items.length} articles • Créée le {new Date(list.createdAt).toLocaleDateString('fr-FR')}
                                       </div>
                                     </div>
-                                    <div className="flex items-center px-2 py-1 rounded-md hover:bg-green-50">
-                                      <Copy className="h-4 w-4 mr-1 text-green-600" />
-                                      <span className="text-sm text-green-600">Dupliquer</span>
+                                    <div className="flex items-center px-2 py-1 rounded-md hover:bg-green-50 dark:hover:bg-green-900/30">
+                                      <Copy className="h-4 w-4 mr-1 text-green-600 dark:text-green-400" />
+                                      <span className="text-sm text-green-600 dark:text-green-400">Dupliquer</span>
                                     </div>
                                   </div>
                                 ))}
@@ -401,7 +401,7 @@ export default function CreateListPage() {
                           {/* Produits groupés par catégorie */}
                           {Object.entries(productsByCategory).map(([category, products]) => (
                             <div key={category} className="space-y-2">
-                              <h3 className="font-medium text-gray-700 border-b pb-1">{category}</h3>
+                              <h3 className="font-medium text-gray-700 dark:text-gray-300 border-b pb-1">{category}</h3>
                               <div className="space-y-2">
                                 {products.map((product, index) => {
                                   const originalIndex = selectedProducts.findIndex(
@@ -410,13 +410,13 @@ export default function CreateListPage() {
                                   return (
                                     <div 
                                       key={index}
-                                      className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-md"
+                                      className="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-800/70 rounded-md"
                                     >
                                       <div className="flex-1">
                                         <span className="font-medium">{product.name}</span>
                                       </div>
                                       <div className="flex items-center space-x-2">
-                                        <div className="flex items-center border rounded-md">
+                                        <div className="flex items-center border dark:border-gray-700 rounded-md">
                                           <Button 
                                             size="sm" 
                                             variant="ghost"
@@ -435,12 +435,12 @@ export default function CreateListPage() {
                                             +
                                           </Button>
                                         </div>
-                                        <span className="text-sm text-gray-500 w-12">{product.unit}</span>
+                                        <span className="text-sm text-gray-500 dark:text-gray-400 w-12">{product.unit}</span>
                                         <Button 
                                           size="sm" 
                                           variant="ghost"
                                           onClick={() => handleRemoveProduct(originalIndex)}
-                                          className="h-8 w-8 p-0 rounded-full text-red-500 hover:text-red-700 hover:bg-red-50"
+                                          className="h-8 w-8 p-0 rounded-full text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30"
                                         >
                                           <X className="h-4 w-4" />
                                         </Button>

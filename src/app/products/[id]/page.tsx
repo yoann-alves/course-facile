@@ -57,7 +57,7 @@ export default function ProductDetailPage({ params }: PageProps) {
     return (
       <MainLayout>
         <div className="flex flex-col items-center justify-center h-full">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">Produit introuvable</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Produit introuvable</h1>
           <p className="text-gray-600 mb-6">Le produit que vous recherchez n&apos;existe pas ou a été supprimé.</p>
           <Button onClick={() => router.push('/manage-expirations')}>
             <ArrowLeft className="w-4 h-4 mr-2" />
@@ -100,7 +100,7 @@ export default function ProductDetailPage({ params }: PageProps) {
             >
               <ArrowLeft className="w-4 h-4" />
             </Button>
-            <h1 className="text-2xl font-bold text-gray-900">{product.name}</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{product.name}</h1>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="sm">
@@ -123,49 +123,49 @@ export default function ProductDetailPage({ params }: PageProps) {
             <CardContent>
               <div className="space-y-4">
                 <div>
-                  <h3 className="text-sm font-medium text-gray-500">Catégorie</h3>
+                  <h3 className="text-sm font-medium text-gray-500 dark:text-gray-300">Catégorie</h3>
                   <p>{product.category}</p>
                 </div>
                 
                 {product.description && (
                   <div>
-                    <h3 className="text-sm font-medium text-gray-500">Description</h3>
+                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-300">Description</h3>
                     <p>{product.description}</p>
                   </div>
                 )}
                 
                 {product.averagePrice && (
                   <div>
-                    <h3 className="text-sm font-medium text-gray-500">Prix moyen</h3>
+                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-300">Prix moyen</h3>
                     <p>{product.averagePrice.toFixed(2)} €</p>
                   </div>
                 )}
                 
                 {product.nutritionalInfo && (
                   <div>
-                    <h3 className="text-sm font-medium text-gray-500">Informations nutritionnelles</h3>
+                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-300">Informations nutritionnelles</h3>
                     <div className="grid grid-cols-2 gap-2 mt-2">
                       {product.nutritionalInfo.calories && (
                         <div>
-                          <p className="text-xs text-gray-500">Calories</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-300">Calories</p>
                           <p className="font-medium">{product.nutritionalInfo.calories} kcal</p>
                         </div>
                       )}
                       {product.nutritionalInfo.protein && (
                         <div>
-                          <p className="text-xs text-gray-500">Protéines</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-300">Protéines</p>
                           <p className="font-medium">{product.nutritionalInfo.protein} g</p>
                         </div>
                       )}
                       {product.nutritionalInfo.carbs && (
                         <div>
-                          <p className="text-xs text-gray-500">Glucides</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-300">Glucides</p>
                           <p className="font-medium">{product.nutritionalInfo.carbs} g</p>
                         </div>
                       )}
                       {product.nutritionalInfo.fat && (
                         <div>
-                          <p className="text-xs text-gray-500">Lipides</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-300">Lipides</p>
                           <p className="font-medium">{product.nutritionalInfo.fat} g</p>
                         </div>
                       )}
@@ -188,7 +188,7 @@ export default function ProductDetailPage({ params }: PageProps) {
                   
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Quantité
                       </label>
                       <input
@@ -203,7 +203,7 @@ export default function ProductDetailPage({ params }: PageProps) {
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Unité
                       </label>
                       <input
@@ -216,7 +216,7 @@ export default function ProductDetailPage({ params }: PageProps) {
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Date de péremption
                       </label>
                       <input
@@ -229,7 +229,7 @@ export default function ProductDetailPage({ params }: PageProps) {
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Emplacement
                       </label>
                       <select
@@ -246,7 +246,7 @@ export default function ProductDetailPage({ params }: PageProps) {
                     </div>
                     
                     <div className="col-span-2">
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                         Notes
                       </label>
                       <textarea

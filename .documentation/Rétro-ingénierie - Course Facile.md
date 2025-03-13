@@ -1,6 +1,6 @@
 # Document de Rétro-ingénierie - Course Facile
 
-*Date de dernière mise à jour: 14/03/2024*
+*Date de dernière mise à jour: 15/03/2024*
 
 ## Structure du Projet
 
@@ -56,6 +56,9 @@ Le projet Course Facile est une application web développée avec Next.js qui pe
 - Tri des listes par date, nom ou nombre d'éléments
 - Génération d'IDs aléatoires pour les nouvelles listes et leurs articles
 - Menu d'actions contextuel pour chaque liste (voir/éditer, partager, supprimer)
+- Création rapide de liste via une modale intuitive
+- Duplication de listes existantes
+- Recherche et ajout rapide de produits lors de la création
 
 ### Gestion des Produits
 
@@ -79,6 +82,15 @@ Le projet Course Facile est une application web développée avec Next.js qui pe
 - Navigation entre les différentes sections de l'application
 - Liens entre les pages de listes et de produits
 - Structure de liens cohérente (utilisation de `/lists/[id]` pour les détails des listes)
+
+### Thème et Apparence
+
+- Support du mode sombre/clair via un contexte global (ThemeContext)
+- Possibilité de choisir entre thème clair, sombre ou système (suivant les préférences du système)
+- Persistance du choix de thème dans le localStorage
+- Adaptation automatique au changement de préférence système lorsque le thème "système" est sélectionné
+- Interface utilisateur adaptée au mode sombre avec des couleurs et contrastes appropriés
+- Sélecteur de thème accessible dans les paramètres de l'application
 
 ## Utilitaires et Fonctions d'Aide
 
@@ -151,6 +163,16 @@ Le projet est actuellement en mode prototypage, avec une concentration sur le d�
 
 ## Modifications Récentes
 
+### 15/03/2024 - Amélioration du processus de création de liste
+- Implémentation d'une modale de création rapide de liste accessible depuis la page "Toutes les listes"
+- Ajout de fonctionnalités pour créer une liste à partir de :
+  - Recherche de produits dans la base de données
+  - Sélection de produits récemment utilisés
+  - Duplication d'une liste existante
+- Simplification du flux utilisateur pour la création de liste
+- Suppression de l'onglet "Créer une liste" devenu redondant
+- Amélioration de l'expérience utilisateur avec un processus plus fluide et intuitif
+
 ### 14/03/2024 (Mise à jour UX)
 - Amélioration majeure de l'expérience utilisateur :
   - Implémentation d'un mode double (visualisation/édition) pour les listes de courses
@@ -190,5 +212,5 @@ Le projet est actuellement en mode prototypage, avec une concentration sur le d�
 - Le projet est en mode développement frontend uniquement (prototypage)
 - Les données sont simulées avec des fichiers JSON statiques
 - Attention particulière à porter sur la cohérence du formatage des dates entre le serveur et le client pour éviter les erreurs d'hydratation
-- Les pages dynamiques utilisant des paramètres doivent utiliser `React.use()` pour accéder aux paramètres
+- Pour les pages dynamiques dans les composants clients, nous utilisons le hook `useParams()` de Next.js pour accéder aux paramètres de route, évitant ainsi les avertissements liés à l'accès direct à `params.id` et les erreurs liées à l'utilisation de `React.use()` dans un contexte client.
 - Les IDs des nouvelles entités sont générés de manière aléatoire pour éviter les collisions 

@@ -105,11 +105,11 @@ export default function ShoppingListCard({
       ref={cardRef}
     >
       <Link href={`/lists/${id}`} className="block">
-        <Card className="w-full hover:shadow-lg transition-all duration-300 relative overflow-hidden cursor-pointer border-2 border-transparent hover:border-green-200">
+        <Card className="w-full hover:shadow-lg transition-all duration-300 relative overflow-hidden cursor-pointer border-2 border-transparent hover:border-green-200 dark:hover:border-green-800">
           {/* Barre de progression en arrière-plan */}
-          <div className="absolute bottom-0 left-0 h-1 bg-gray-100 w-full">
+          <div className="absolute bottom-0 left-0 h-1 bg-gray-100 dark:bg-gray-700 w-full">
             <div 
-              className="h-full bg-green-500 transition-all duration-500"
+              className="h-full bg-green-500 dark:bg-green-600 transition-all duration-500"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -117,8 +117,8 @@ export default function ShoppingListCard({
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-green-50 rounded-full">
-                  <ShoppingCart className="h-5 w-5 text-green-600" />
+                <div className="p-2 bg-green-50 dark:bg-green-900/30 rounded-full">
+                  <ShoppingCart className="h-5 w-5 text-green-600 dark:text-green-400" />
                 </div>
                 <div>
                   <CardTitle className="flex items-center gap-2">
@@ -135,12 +135,12 @@ export default function ShoppingListCard({
           <CardContent>
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-2">
-                <Package className="h-4 w-4 text-gray-400" />
-                <span className="text-sm text-gray-600">
+                <Package className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                <span className="text-sm text-gray-600 dark:text-gray-300">
                   {itemCount} {itemCount > 1 ? 'articles' : 'article'}
                 </span>
               </div>
-              <div className="text-sm text-gray-500">
+              <div className="text-sm text-gray-500 dark:text-gray-400">
                 {completedCount} / {itemCount} complétés
               </div>
             </div>
@@ -153,24 +153,24 @@ export default function ShoppingListCard({
         <Button
           variant="ghost"
           size="sm"
-          className="rounded-full w-8 h-8 p-0 bg-white hover:bg-gray-100"
+          className="rounded-full w-8 h-8 p-0 bg-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
             setShowActions(!showActions);
           }}
         >
-          <MoreVertical className="h-4 w-4 text-gray-500" />
+          <MoreVertical className="h-4 w-4 text-gray-500 dark:text-gray-400" />
         </Button>
 
         {showActions && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="absolute right-0 mt-1 w-36 bg-white shadow-lg rounded-md overflow-hidden border border-gray-200"
+            className="absolute right-0 mt-1 w-36 bg-white dark:bg-gray-800 shadow-lg rounded-md overflow-hidden border border-gray-200 dark:border-gray-700"
           >
             <button 
-              className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center"
+              className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -178,11 +178,11 @@ export default function ShoppingListCard({
                 setShowActions(false);
               }}
             >
-              <Share2 className="h-4 w-4 mr-2 text-green-500" />
+              <Share2 className="h-4 w-4 mr-2 text-green-500 dark:text-green-400" />
               Partager
             </button>
             <button 
-              className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center"
+              className="w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 flex items-center"
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
@@ -249,7 +249,7 @@ export default function ShoppingListCard({
             <Button type="button" variant="outline" onClick={() => setShowDeleteDialog(false)}>
               Annuler
             </Button>
-            <Button type="button" variant="secondary" className="bg-red-500 text-white hover:bg-red-600" onClick={handleDelete}>
+            <Button type="button" variant="secondary" className="bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700" onClick={handleDelete}>
               Supprimer
             </Button>
           </DialogFooter>

@@ -77,7 +77,7 @@ export default function Sidebar({ isCollapsed, onToggle }: SidebarProps) {
               key={item.href}
               href={item.href}
               className={cn(
-                'flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900',
+                'flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:hover:text-gray-100',
                 isActive && 'bg-green-50 text-green-600'
               )}
             >

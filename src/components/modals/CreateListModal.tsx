@@ -162,7 +162,7 @@ export default function CreateListModal({ isOpen, onClose }: CreateListModalProp
         <div className="space-y-6 py-4">
           {/* Titre de la liste */}
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
               Titre de la liste
             </label>
             <Input
@@ -179,21 +179,21 @@ export default function CreateListModal({ isOpen, onClose }: CreateListModalProp
             <TabsList className="flex w-full border-b mb-4 bg-transparent p-0 space-x-2">
               <TabsTrigger 
                 value="search" 
-                className="flex items-center px-4 py-2 border-b-2 data-[state=active]:border-green-500 data-[state=active]:text-green-600 data-[state=inactive]:border-transparent data-[state=inactive]:text-gray-500 hover:text-gray-700 hover:border-gray-300 rounded-none bg-transparent shadow-none"
+                className="flex items-center px-4 py-2 border-b-2 data-[state=active]:border-green-500 data-[state=active]:text-green-600 dark:data-[state=active]:text-green-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-gray-500 dark:data-[state=inactive]:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 rounded-none bg-transparent shadow-none"
               >
                 <Search className="w-4 h-4 mr-2" />
                 Recherche
               </TabsTrigger>
               <TabsTrigger 
                 value="recent" 
-                className="flex items-center px-4 py-2 border-b-2 data-[state=active]:border-green-500 data-[state=active]:text-green-600 data-[state=inactive]:border-transparent data-[state=inactive]:text-gray-500 hover:text-gray-700 hover:border-gray-300 rounded-none bg-transparent shadow-none"
+                className="flex items-center px-4 py-2 border-b-2 data-[state=active]:border-green-500 data-[state=active]:text-green-600 dark:data-[state=active]:text-green-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-gray-500 dark:data-[state=inactive]:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 rounded-none bg-transparent shadow-none"
               >
                 <Clock className="w-4 h-4 mr-2" />
                 Récents
               </TabsTrigger>
               <TabsTrigger 
                 value="duplicate" 
-                className="flex items-center px-4 py-2 border-b-2 data-[state=active]:border-green-500 data-[state=active]:text-green-600 data-[state=inactive]:border-transparent data-[state=inactive]:text-gray-500 hover:text-gray-700 hover:border-gray-300 rounded-none bg-transparent shadow-none"
+                className="flex items-center px-4 py-2 border-b-2 data-[state=active]:border-green-500 data-[state=active]:text-green-600 dark:data-[state=active]:text-green-400 data-[state=inactive]:border-transparent data-[state=inactive]:text-gray-500 dark:data-[state=inactive]:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:border-gray-300 dark:hover:border-gray-600 rounded-none bg-transparent shadow-none"
               >
                 <Copy className="w-4 h-4 mr-2" />
                 Dupliquer
@@ -245,7 +245,7 @@ export default function CreateListModal({ isOpen, onClose }: CreateListModalProp
               
               {/* Produits favoris */}
               <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
                   <Star className="w-4 h-4 text-amber-400 mr-1" />
                   Favoris
                 </h3>
@@ -270,7 +270,7 @@ export default function CreateListModal({ isOpen, onClose }: CreateListModalProp
             
             {/* Onglet Récents */}
             <TabsContent value="recent" className="space-y-4">
-              <h3 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
                 <Clock className="w-4 h-4 text-blue-500 mr-1" />
                 Produits récemment utilisés
               </h3>
@@ -298,7 +298,7 @@ export default function CreateListModal({ isOpen, onClose }: CreateListModalProp
             
             {/* Onglet Dupliquer */}
             <TabsContent value="duplicate" className="space-y-4">
-              <h3 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
                 <Copy className="w-4 h-4 text-green-500 mr-1" />
                 Dupliquer une liste existante
               </h3>
@@ -336,7 +336,7 @@ export default function CreateListModal({ isOpen, onClose }: CreateListModalProp
           {/* Produits sélectionnés */}
           {selectedProducts.length > 0 && (
             <div className="border-t pt-4">
-              <h3 className="text-sm font-medium text-gray-700 mb-2 flex items-center">
+              <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center">
                 <Check className="w-4 h-4 text-green-500 mr-1" />
                 Produits sélectionnés ({selectedProducts.length})
               </h3>

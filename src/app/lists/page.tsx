@@ -68,8 +68,8 @@ export default function ListsPage() {
     <MainLayout>
       <div className="container mx-auto py-6 px-4">
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-900">Mes listes de courses</h1>
+          <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Mes listes de courses</h1>
             <Link href="/create-list">
               <Button>
                 <Plus className="w-4 h-4 mr-2" />

@@ -26,7 +26,7 @@ export default function ManageExpirationsPage() {
       <div className="container mx-auto py-6 px-4">
         <div className="space-y-6">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-900">Gérer les péremptions</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Gérer les péremptions</h1>
           </div>
 
           {/* Produits périmés */}
@@ -121,7 +121,7 @@ export default function ManageExpirationsPage() {
           {/* Autres produits */}
           <Card>
             <CardContent className="pt-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Autres produits</h2>
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 mb-4">Autres produits</h2>
               <div className="space-y-3">
                 {sortedItems.filter(item => !isExpiringSoon(item) && !isExpired(item)).length === 0 ? (
                   <p className="text-gray-500">Aucun autre produit.</p>
