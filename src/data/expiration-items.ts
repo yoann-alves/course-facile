@@ -75,17 +75,17 @@ export const expirationItems: ExpirationItem[] = [
 ];
 
 // Fonction utilitaire pour vérifier si un produit expire bientôt (dans les 3 jours)
-export function isExpiringSoon(expirationDate: string): boolean {
+export function isExpiringSoon(item: ExpirationItem): boolean {
   const today = new Date();
-  const expDate = new Date(expirationDate);
+  const expDate = new Date(item.expirationDate);
   const diffTime = expDate.getTime() - today.getTime();
   const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   return diffDays >= 0 && diffDays <= 3;
 }
 
 // Fonction utilitaire pour vérifier si un produit est expiré
-export function isExpired(expirationDate: string): boolean {
+export function isExpired(item: ExpirationItem): boolean {
   const today = new Date();
-  const expDate = new Date(expirationDate);
+  const expDate = new Date(item.expirationDate);
   return expDate < today;
 } 

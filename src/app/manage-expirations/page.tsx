@@ -2,18 +2,25 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Plus, Calendar, AlertTriangle, Check, Trash2 } from 'lucide-react';
+import { ArrowLeft, Plus, Calendar, AlertTriangle, Check, Trash2, ExternalLink } from 'lucide-react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { expirationItems, isExpiringSoon, isExpired } from '@/data/expiration-items';
 import { categories } from '@/data/shopping-lists';
+import { products } from '@/data/products';
 
 export default function ManageExpirationsPage() {
   // Trier les produits par date de péremption (les plus proches en premier)
   const sortedItems = [...expirationItems].sort((a, b) => 
     new Date(a.expirationDate).getTime() - new Date(b.expirationDate).getTime()
   );
+
+  // Obtenir l'ID du produit à partir de son nom
+  const getProductId = (productName: string): string | undefined => {
+    const product = products.find(p => p.name === productName);
+    return product?.id;
+  };
 
   return (
     <MainLayout>
@@ -28,196 +35,144 @@ export default function ManageExpirationsPage() {
           <h1 className="text-2xl font-bold text-gray-900">Gérer les péremptions</h1>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="md:col-span-2">
-            <Card>
-              <CardContent className="pt-6">
-                <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center">
-                  <Calendar className="w-5 h-5 mr-2 text-green-600" />
-                  Produits en stock
-                </h2>
-
-                <div className="space-y-4">
-                  {/* Produits expirés */}
-                  {sortedItems.filter(item => isExpired(item.expirationDate)).length > 0 && (
-                    <div>
-                      <h3 className="text-lg font-medium text-red-600 mb-2 flex items-center">
-                        <AlertTriangle className="w-4 h-4 mr-2" />
-                        Produits expirés
-                      </h3>
-                      <div className="space-y-2">
-                        {sortedItems
-                          .filter(item => isExpired(item.expirationDate))
-                          .map(item => (
-                            <div key={item.id} className="flex items-center justify-between p-3 bg-red-50 border border-red-100 rounded-md">
-                              <div>
-                                <span className="font-medium">{item.name}</span>
-                                <span className="text-sm text-gray-500 ml-2">
-                                  {item.quantity} {item.unit}
-                                </span>
-                                <div className="text-xs text-red-600 mt-1">
-                                  Expiré depuis le {new Date(item.expirationDate).toLocaleDateString('fr-FR')}
-                                </div>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-700 hover:bg-red-50">
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
-                              </div>
-                            </div>
-                          ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Produits qui expirent bientôt */}
-                  {sortedItems.filter(item => isExpiringSoon(item.expirationDate)).length > 0 && (
-                    <div>
-                      <h3 className="text-lg font-medium text-amber-600 mb-2 flex items-center">
-                        <AlertTriangle className="w-4 h-4 mr-2" />
-                        Expire bientôt
-                      </h3>
-                      <div className="space-y-2">
-                        {sortedItems
-                          .filter(item => isExpiringSoon(item.expirationDate))
-                          .map(item => (
-                            <div key={item.id} className="flex items-center justify-between p-3 bg-amber-50 border border-amber-100 rounded-md">
-                              <div>
-                                <span className="font-medium">{item.name}</span>
-                                <span className="text-sm text-gray-500 ml-2">
-                                  {item.quantity} {item.unit}
-                                </span>
-                                <div className="text-xs text-amber-600 mt-1">
-                                  Expire le {new Date(item.expirationDate).toLocaleDateString('fr-FR')}
-                                </div>
-                              </div>
-                              <div className="flex items-center space-x-2">
-                                <Button variant="ghost" size="sm" className="text-green-500 hover:text-green-700 hover:bg-green-50">
-                                  <Check className="w-4 h-4" />
-                                </Button>
-                                <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-700 hover:bg-red-50">
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
-                              </div>
-                            </div>
-                          ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Autres produits */}
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-800 mb-2">Autres produits</h3>
-                    <div className="space-y-2">
-                      {sortedItems
-                        .filter(item => !isExpiringSoon(item.expirationDate) && !isExpired(item.expirationDate))
-                        .map(item => (
-                          <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 border border-gray-100 rounded-md">
-                            <div>
-                              <span className="font-medium">{item.name}</span>
-                              <span className="text-sm text-gray-500 ml-2">
-                                {item.quantity} {item.unit}
-                              </span>
-                              <div className="text-xs text-gray-500 mt-1">
-                                Expire le {new Date(item.expirationDate).toLocaleDateString('fr-FR')}
-                              </div>
-                            </div>
-                            <div className="flex items-center space-x-2">
-                              <Button variant="ghost" size="sm" className="text-green-500 hover:text-green-700 hover:bg-green-50">
-                                <Check className="w-4 h-4" />
-                              </Button>
-                              <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-700 hover:bg-red-50">
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </div>
+        {/* Produits périmés */}
+        <Card>
+          <CardContent className="pt-6">
+            <h2 className="text-xl font-semibold text-red-600 mb-4 flex items-center">
+              <AlertTriangle className="w-5 h-5 mr-2" />
+              Produits périmés
+            </h2>
+            <div className="space-y-3">
+              {sortedItems.filter(isExpired).length === 0 ? (
+                <p className="text-gray-500">Aucun produit périmé.</p>
+              ) : (
+                sortedItems.filter(isExpired).map(item => {
+                  const productId = getProductId(item.name);
+                  return (
+                    <div key={item.id} className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <div className="flex items-center">
+                            <h3 className="font-medium">{item.name}</h3>
+                            {productId && (
+                              <Link href={`/products/${productId}`} className="ml-2 text-blue-500 hover:text-blue-700">
+                                <ExternalLink className="w-4 h-4" />
+                              </Link>
+                            )}
                           </div>
-                        ))}
+                          <p className="text-sm text-red-600">
+                            Expiré depuis le {new Date(item.expirationDate).toLocaleDateString('fr-FR')}
+                          </p>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button variant="ghost" size="sm">
+                            <Trash2 className="w-4 h-4 text-red-500" />
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                  );
+                })
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
-          <div>
-            <Card>
-              <CardContent className="pt-6">
-                <h3 className="text-lg font-medium text-gray-800 mb-4">Ajouter un produit</h3>
-                <form className="space-y-4">
-                  <div>
-                    <label htmlFor="product" className="block text-sm font-medium text-gray-700 mb-1">
-                      Produit
-                    </label>
-                    <input
-                      type="text"
-                      id="product"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                      placeholder="Ex: Lait"
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-2">
-                    <div>
-                      <label htmlFor="quantity" className="block text-sm font-medium text-gray-700 mb-1">
-                        Quantité
-                      </label>
-                      <input
-                        type="number"
-                        id="quantity"
-                        min="1"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                        placeholder="1"
-                      />
+        {/* Produits bientôt périmés */}
+        <Card>
+          <CardContent className="pt-6">
+            <h2 className="text-xl font-semibold text-yellow-600 mb-4 flex items-center">
+              <AlertTriangle className="w-5 h-5 mr-2" />
+              Bientôt périmés
+            </h2>
+            <div className="space-y-3">
+              {sortedItems.filter(item => isExpiringSoon(item) && !isExpired(item)).length === 0 ? (
+                <p className="text-gray-500">Aucun produit bientôt périmé.</p>
+              ) : (
+                sortedItems.filter(item => isExpiringSoon(item) && !isExpired(item)).map(item => {
+                  const productId = getProductId(item.name);
+                  return (
+                    <div key={item.id} className="p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <div className="flex items-center">
+                            <h3 className="font-medium">{item.name}</h3>
+                            {productId && (
+                              <Link href={`/products/${productId}`} className="ml-2 text-blue-500 hover:text-blue-700">
+                                <ExternalLink className="w-4 h-4" />
+                              </Link>
+                            )}
+                          </div>
+                          <p className="text-sm text-yellow-600">
+                            Expire le {new Date(item.expirationDate).toLocaleDateString('fr-FR')}
+                          </p>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button variant="ghost" size="sm">
+                            <Check className="w-4 h-4 text-green-500" />
+                          </Button>
+                          <Button variant="ghost" size="sm">
+                            <Trash2 className="w-4 h-4 text-red-500" />
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                    <div>
-                      <label htmlFor="unit" className="block text-sm font-medium text-gray-700 mb-1">
-                        Unité
-                      </label>
-                      <input
-                        type="text"
-                        id="unit"
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                        placeholder="L, kg, pièce..."
-                      />
+                  );
+                })
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Autres produits */}
+        <Card>
+          <CardContent className="pt-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">Autres produits</h2>
+            <div className="space-y-3">
+              {sortedItems.filter(item => !isExpiringSoon(item) && !isExpired(item)).length === 0 ? (
+                <p className="text-gray-500">Aucun autre produit.</p>
+              ) : (
+                sortedItems.filter(item => !isExpiringSoon(item) && !isExpired(item)).map(item => {
+                  const productId = getProductId(item.name);
+                  return (
+                    <div key={item.id} className="p-3 bg-white border rounded-lg">
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <div className="flex items-center">
+                            <h3 className="font-medium">{item.name}</h3>
+                            {productId && (
+                              <Link href={`/products/${productId}`} className="ml-2 text-blue-500 hover:text-blue-700">
+                                <ExternalLink className="w-4 h-4" />
+                              </Link>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-500">
+                            Expire le {new Date(item.expirationDate).toLocaleDateString('fr-FR')}
+                          </p>
+                        </div>
+                        <div className="flex space-x-2">
+                          <Button variant="ghost" size="sm">
+                            <Check className="w-4 h-4 text-green-500" />
+                          </Button>
+                          <Button variant="ghost" size="sm">
+                            <Trash2 className="w-4 h-4 text-red-500" />
+                          </Button>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
-                      Catégorie
-                    </label>
-                    <select
-                      id="category"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                    >
-                      <option value="">Sélectionner une catégorie</option>
-                      {categories.map(category => (
-                        <option key={category} value={category}>{category}</option>
-                      ))}
-                    </select>
-                  </div>
-                  
-                  <div>
-                    <label htmlFor="expiration" className="block text-sm font-medium text-gray-700 mb-1">
-                      Date de péremption
-                    </label>
-                    <input
-                      type="date"
-                      id="expiration"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
-                    />
-                  </div>
-                  
-                  <div className="pt-2">
-                    <Button className="w-full">
-                      <Plus className="w-4 h-4 mr-2" />
-                      Ajouter le produit
-                    </Button>
-                  </div>
-                </form>
-              </CardContent>
-            </Card>
-          </div>
+                  );
+                })
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Ajouter un produit */}
+        <div className="flex justify-center mt-8">
+          <Button>
+            <Plus className="w-4 h-4 mr-2" />
+            Ajouter un produit
+          </Button>
         </div>
       </div>
     </MainLayout>

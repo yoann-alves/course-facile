@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { LucideIcon } from 'lucide-react';
 import { 
   LayoutDashboard, 
-  ListPlus, 
   AlertCircle, 
   Settings, 
   Menu,
@@ -26,7 +25,6 @@ const navigation: NavigationItem[] = [
   { name: 'Tableau de bord', href: '/dashboard', icon: LayoutDashboard },
   { name: 'Toutes les listes', href: '/lists', icon: List },
   { name: 'Listes en cours', href: '/lists?tab=active', icon: Clock },
-  { name: 'Créer une liste', href: '/create-list', icon: ListPlus },
   { name: 'Péremptions', href: '/manage-expirations', icon: AlertCircle },
   { name: 'Paramètres', href: '/settings', icon: Settings },
 ];
