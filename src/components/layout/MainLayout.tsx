@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Menu, X, Home, ShoppingCart, Calendar, Settings, List } from 'lucide-react';
+import { Menu, X, Home, Calendar, Settings, List } from 'lucide-react';
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -52,12 +52,6 @@ export default function MainLayout({ children }: MainLayoutProps) {
               <Link href="/lists" className="flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-green-50 hover:text-green-700">
                 <List className="w-5 h-5 mr-3" />
                 Toutes les listes
-              </Link>
-            </li>
-            <li>
-              <Link href="/create-list" className="flex items-center px-4 py-2 text-gray-700 rounded-md hover:bg-green-50 hover:text-green-700">
-                <ShoppingCart className="w-5 h-5 mr-3" />
-                Créer une liste
               </Link>
             </li>
             <li>

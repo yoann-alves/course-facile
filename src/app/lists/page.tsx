@@ -10,7 +10,7 @@ import { shoppingLists } from '@/data/shopping-lists';
 import { ToastContext } from '@/components/ui/toast';
 import { cn } from '@/lib/utils';
 import ShoppingListCard from '@/components/ShoppingListCard';
-import CreateListModal from '@/components/modals/CreateListModal';
+import Link from 'next/link';
 
 type TabOption = 'all' | 'active' | 'completed';
 
@@ -19,7 +19,6 @@ export default function ListsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [activeTab, setActiveTab] = useState<TabOption>('all');
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // Configuration des onglets
   const tabs = [
@@ -70,10 +69,12 @@ export default function ListsPage() {
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <h1 className="text-2xl font-bold text-gray-900">Mes listes de courses</h1>
-            <Button onClick={() => setIsCreateModalOpen(true)}>
-              <Plus className="w-4 h-4 mr-2" />
-              Nouvelle liste
-            </Button>
+            <Link href="/create-list">
+              <Button>
+                <Plus className="w-4 h-4 mr-2" />
+                Nouvelle liste
+              </Button>
+            </Link>
           </div>
 
           <Card>
@@ -142,10 +143,12 @@ export default function ListsPage() {
                         ? `Aucune liste ${activeTab === 'completed' ? 'terminée' : 'en cours'}`
                         : "Vous n'avez pas encore créé de liste"}
                     </p>
-                    <Button onClick={() => setIsCreateModalOpen(true)}>
-                      <Plus className="w-4 h-4 mr-2" />
-                      Créer une liste
-                    </Button>
+                    <Link href="/create-list">
+                      <Button>
+                        <Plus className="w-4 h-4 mr-2" />
+                        Créer une liste
+                      </Button>
+                    </Link>
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -166,12 +169,6 @@ export default function ListsPage() {
             </CardContent>
           </Card>
         </div>
-
-        {/* Modale de création de liste */}
-        <CreateListModal 
-          isOpen={isCreateModalOpen} 
-          onClose={() => setIsCreateModalOpen(false)} 
-        />
       </div>
     </MainLayout>
   );

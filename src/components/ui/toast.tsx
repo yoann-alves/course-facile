@@ -39,10 +39,10 @@ export function Toast({ message, type, onClose }: ToastProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: -20 }}
+      initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className={`fixed top-4 right-4 z-50 flex items-center gap-3 px-4 py-3 rounded-lg border ${toastStyles[type]}`}
+      exit={{ opacity: 0, y: 20 }}
+      className={`flex items-center gap-3 px-4 py-3 rounded-lg border shadow-md ${toastStyles[type]}`}
     >
       {toastIcons[type]}
       <p className="text-sm">{message}</p>
@@ -66,6 +66,9 @@ export const ToastContext = React.createContext<ToastContextType>({
   showToast: () => {}
 });
 
+// Nombre maximum de notifications à afficher
+const MAX_TOASTS = 2;
+
 export function ToastProvider({ children }: { children: React.ReactNode }) {
   const [toasts, setToasts] = React.useState<Array<{ id: number; message: string; type: ToastType }>>([]);
   const pathname = usePathname();
@@ -78,13 +81,20 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     const id = Date.now();
     
     if (type === 'loading') {
+      // Pour les toasts de type loading, on remplace l'existant s'il y en a un
       setToasts(prev => [...prev.filter(toast => toast.type !== 'loading'), { id, message, type }]);
     } else {
       setToasts(prev => {
+        // Si on a un toast de chargement, on le remplace
         const loadingToast = prev.find(t => t.type === 'loading');
-        return loadingToast
-          ? [...prev.filter(t => t.id !== loadingToast.id), { id, message, type }]
-          : [...prev, { id, message, type }];
+        if (loadingToast) {
+          return [...prev.filter(t => t.id !== loadingToast.id), { id, message, type }];
+        }
+        
+        // Sinon, on ajoute le nouveau toast et on limite à MAX_TOASTS
+        const newToasts = [...prev, { id, message, type }];
+        // On garde les MAX_TOASTS plus récents
+        return newToasts.slice(-MAX_TOASTS);
       });
     }
   }, []);
@@ -96,16 +106,18 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
-      <AnimatePresence>
-        {toasts.map(toast => (
-          <Toast
-            key={toast.id}
-            message={toast.message}
-            type={toast.type}
-            onClose={() => hideToast(toast.id)}
-          />
-        ))}
-      </AnimatePresence>
+      <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+        <AnimatePresence>
+          {toasts.map(toast => (
+            <Toast
+              key={toast.id}
+              message={toast.message}
+              type={toast.type}
+              onClose={() => hideToast(toast.id)}
+            />
+          ))}
+        </AnimatePresence>
+      </div>
     </ToastContext.Provider>
   );
 } 

@@ -22,7 +22,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ToastContext } from '@/components/ui/toast';
-import { shoppingLists, frequentProducts, categories } from '@/data/shopping-lists';
+import { shoppingLists, frequentProducts } from '@/data/shopping-lists';
 import { generateId, formatDate } from '@/lib/utils';
 
 interface CreateListModalProps {
@@ -74,8 +74,25 @@ export default function CreateListModal({ isOpen, onClose }: CreateListModalProp
   
   // Ajouter un produit à la liste
   const handleAddProduct = (product: { name: string; unit: string; category: string }) => {
-    setSelectedProducts([...selectedProducts, { ...product, quantity: 1 }]);
-    showToast(`${product.name} ajouté`, 'success');
+    // Vérifier si le produit existe déjà dans la liste
+    const existingProductIndex = selectedProducts.findIndex(
+      p => p.name.toLowerCase() === product.name.toLowerCase() && p.category === product.category
+    );
+
+    if (existingProductIndex !== -1) {
+      // Si le produit existe déjà, incrémenter sa quantité
+      const updatedProducts = [...selectedProducts];
+      updatedProducts[existingProductIndex] = {
+        ...updatedProducts[existingProductIndex],
+        quantity: updatedProducts[existingProductIndex].quantity + 1
+      };
+      setSelectedProducts(updatedProducts);
+      showToast(`Quantité de ${product.name} augmentée`, 'success');
+    } else {
+      // Sinon, ajouter le nouveau produit
+      setSelectedProducts([...selectedProducts, { ...product, quantity: 1 }]);
+      showToast(`${product.name} ajouté`, 'success');
+    }
   };
   
   // Supprimer un produit de la liste
@@ -130,7 +147,7 @@ export default function CreateListModal({ isOpen, onClose }: CreateListModalProp
       setTimeout(() => {
         router.push(`/lists/${newListId}`);
       }, 500);
-    } catch (error) {
+    } catch {
       showToast('Erreur lors de la création', 'error');
     }
   };
@@ -151,7 +168,7 @@ export default function CreateListModal({ isOpen, onClose }: CreateListModalProp
             <Input
               id="title"
               value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setTitle(e.target.value)}
               placeholder="Ex: Courses hebdomadaires"
               className="w-full"
             />
@@ -159,10 +176,28 @@ export default function CreateListModal({ isOpen, onClose }: CreateListModalProp
           
           {/* Onglets */}
           <Tabs defaultValue="search" className="w-full">
-            <TabsList className="grid grid-cols-3 mb-4">
-              <TabsTrigger value="search">Recherche</TabsTrigger>
-              <TabsTrigger value="recent">Récents</TabsTrigger>
-              <TabsTrigger value="duplicate">Dupliquer</TabsTrigger>
+            <TabsList className="flex w-full border-b mb-4 bg-transparent p-0 space-x-2">
+              <TabsTrigger 
+                value="search" 
+                className="flex items-center px-4 py-2 border-b-2 data-[state=active]:border-green-500 data-[state=active]:text-green-600 data-[state=inactive]:border-transparent data-[state=inactive]:text-gray-500 hover:text-gray-700 hover:border-gray-300 rounded-none bg-transparent shadow-none"
+              >
+                <Search className="w-4 h-4 mr-2" />
+                Recherche
+              </TabsTrigger>
+              <TabsTrigger 
+                value="recent" 
+                className="flex items-center px-4 py-2 border-b-2 data-[state=active]:border-green-500 data-[state=active]:text-green-600 data-[state=inactive]:border-transparent data-[state=inactive]:text-gray-500 hover:text-gray-700 hover:border-gray-300 rounded-none bg-transparent shadow-none"
+              >
+                <Clock className="w-4 h-4 mr-2" />
+                Récents
+              </TabsTrigger>
+              <TabsTrigger 
+                value="duplicate" 
+                className="flex items-center px-4 py-2 border-b-2 data-[state=active]:border-green-500 data-[state=active]:text-green-600 data-[state=inactive]:border-transparent data-[state=inactive]:text-gray-500 hover:text-gray-700 hover:border-gray-300 rounded-none bg-transparent shadow-none"
+              >
+                <Copy className="w-4 h-4 mr-2" />
+                Dupliquer
+              </TabsTrigger>
             </TabsList>
             
             {/* Onglet Recherche */}
@@ -172,7 +207,7 @@ export default function CreateListModal({ isOpen, onClose }: CreateListModalProp
                 <Input
                   placeholder="Rechercher un produit..."
                   value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                   className="pl-9"
                 />
               </div>
@@ -188,7 +223,8 @@ export default function CreateListModal({ isOpen, onClose }: CreateListModalProp
                       {searchResults.map((product, index) => (
                         <div 
                           key={index}
-                          className="flex items-center justify-between p-3 hover:bg-gray-50 border-b last:border-b-0"
+                          className="flex items-center justify-between p-3 hover:bg-gray-50 border-b last:border-b-0 cursor-pointer"
+                          onClick={() => handleAddProduct(product)}
                         >
                           <div>
                             <span className="font-medium">{product.name}</span>
@@ -196,14 +232,9 @@ export default function CreateListModal({ isOpen, onClose }: CreateListModalProp
                           </div>
                           <div className="flex items-center">
                             <span className="text-xs text-gray-500 mr-2">{product.category}</span>
-                            <Button 
-                              size="sm" 
-                              variant="ghost"
-                              onClick={() => handleAddProduct(product)}
-                              className="h-8 w-8 p-0 rounded-full"
-                            >
-                              <Plus className="h-4 w-4" />
-                            </Button>
+                            <div className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-green-50">
+                              <Plus className="h-4 w-4 text-green-600" />
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -222,19 +253,15 @@ export default function CreateListModal({ isOpen, onClose }: CreateListModalProp
                   {favoriteProducts.map((product, index) => (
                     <div 
                       key={index}
-                      className="flex items-center justify-between p-2 border rounded-md hover:bg-gray-50"
+                      className="flex items-center justify-between p-2 border rounded-md hover:bg-gray-50 cursor-pointer"
+                      onClick={() => handleAddProduct(product)}
                     >
                       <div className="truncate">
                         <span className="font-medium text-sm">{product.name}</span>
                       </div>
-                      <Button 
-                        size="sm" 
-                        variant="ghost"
-                        onClick={() => handleAddProduct(product)}
-                        className="h-7 w-7 p-0 rounded-full"
-                      >
-                        <Plus className="h-3 w-3" />
-                      </Button>
+                      <div className="h-7 w-7 flex items-center justify-center rounded-full hover:bg-green-50">
+                        <Plus className="h-3 w-3 text-green-600" />
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -251,7 +278,8 @@ export default function CreateListModal({ isOpen, onClose }: CreateListModalProp
                 {recentProducts.map((product, index) => (
                   <div 
                     key={index}
-                    className="flex items-center justify-between p-3 hover:bg-gray-50 border-b last:border-b-0"
+                    className="flex items-center justify-between p-3 hover:bg-gray-50 border-b last:border-b-0 cursor-pointer"
+                    onClick={() => handleAddProduct(product)}
                   >
                     <div>
                       <span className="font-medium">{product.name}</span>
@@ -259,14 +287,9 @@ export default function CreateListModal({ isOpen, onClose }: CreateListModalProp
                     </div>
                     <div className="flex items-center">
                       <span className="text-xs text-gray-500 mr-2">{product.category}</span>
-                      <Button 
-                        size="sm" 
-                        variant="ghost"
-                        onClick={() => handleAddProduct(product)}
-                        className="h-8 w-8 p-0 rounded-full"
-                      >
-                        <Plus className="h-4 w-4" />
-                      </Button>
+                      <div className="h-8 w-8 flex items-center justify-center rounded-full hover:bg-green-50">
+                        <Plus className="h-4 w-4 text-green-600" />
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -289,7 +312,8 @@ export default function CreateListModal({ isOpen, onClose }: CreateListModalProp
                     {shoppingLists.map((list) => (
                       <div 
                         key={list.id}
-                        className="flex items-center justify-between p-3 hover:bg-gray-50 border-b last:border-b-0"
+                        className="flex items-center justify-between p-3 hover:bg-gray-50 border-b last:border-b-0 cursor-pointer"
+                        onClick={() => handleDuplicateList(list)}
                       >
                         <div>
                           <span className="font-medium">{list.title}</span>
@@ -297,15 +321,10 @@ export default function CreateListModal({ isOpen, onClose }: CreateListModalProp
                             {list.items.length} articles • Créée le {formatDate(list.createdAt)}
                           </div>
                         </div>
-                        <Button 
-                          size="sm" 
-                          variant="ghost"
-                          onClick={() => handleDuplicateList(list)}
-                          className="h-8 p-0 px-2"
-                        >
-                          <Copy className="h-4 w-4 mr-1" />
-                          Dupliquer
-                        </Button>
+                        <div className="flex items-center px-2 py-1 rounded-md hover:bg-green-50">
+                          <Copy className="h-4 w-4 mr-1 text-green-600" />
+                          <span className="text-sm text-green-600">Dupliquer</span>
+                        </div>
                       </div>
                     ))}
                   </div>
