@@ -2,17 +2,42 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { expirationItems, isExpiringSoon, isExpired } from '@/data/expiration-items';
+import { Bell, AlertTriangle, Info } from 'lucide-react';
+
+// Type pour une notification
+export interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  icon: React.ElementType;
+  bgClass: string;
+  borderClass: string;
+  iconBgClass: string;
+  iconColorClass: string;
+  textColorClass: string;
+  actionColorClass: string;
+  href: string;
+  date: string;
+  read?: boolean;
+}
 
 type NotificationContextType = {
   notificationCount: number;
   showBadges: boolean;
   toggleShowBadges: () => void;
+  notifications: Notification[];
+  markAsRead: (id: string) => void;
+  markAllAsRead: () => void;
+  deleteNotification: (id: string) => void;
 };
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
-  // État pour le nombre de notifications
+  // État pour les notifications
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  
+  // État pour le nombre de notifications non lues
   const [notificationCount, setNotificationCount] = useState(0);
   
   // État pour l'affichage des badges (stocké dans localStorage)
@@ -33,7 +58,32 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     localStorage.setItem('showNotificationBadges', String(newValue));
   };
   
-  // Calculer le nombre de notifications
+  // Fonction pour marquer une notification comme lue
+  const markAsRead = (id: string) => {
+    setNotifications(prev => 
+      prev.map(notification => 
+        notification.id === id 
+          ? { ...notification, read: true } 
+          : notification
+      )
+    );
+  };
+  
+  // Fonction pour marquer toutes les notifications comme lues
+  const markAllAsRead = () => {
+    setNotifications(prev => 
+      prev.map(notification => ({ ...notification, read: true }))
+    );
+  };
+  
+  // Fonction pour supprimer une notification
+  const deleteNotification = (id: string) => {
+    setNotifications(prev => 
+      prev.filter(notification => notification.id !== id)
+    );
+  };
+  
+  // Générer les notifications et calculer le nombre de notifications non lues
   useEffect(() => {
     // Filtrer les produits qui expirent bientôt ou sont expirés
     const expiringSoonItems = expirationItems.filter(item => isExpiringSoon(item));
@@ -43,14 +93,89 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     const hasExpiredItems = expiredItems.length > 0;
     const hasExpiringSoonItems = expiringSoonItems.length > 0;
     
-    // Nombre total de notifications
-    const count = (hasExpiredItems ? 1 : 0) + (hasExpiringSoonItems ? 1 : 0) + 1; // +1 pour la notification d'information
+    // Créer un tableau de notifications
+    const newNotifications: Notification[] = [];
     
-    setNotificationCount(count);
+    // Ajouter la notification pour les produits périmés si nécessaire
+    if (hasExpiredItems) {
+      newNotifications.push({
+        id: 'expired',
+        title: 'Attention : Produits périmés',
+        message: `${expiredItems.length} produit${expiredItems.length > 1 ? 's' : ''} périmé${expiredItems.length > 1 ? 's' : ''}`,
+        icon: AlertTriangle,
+        bgClass: 'bg-red-50',
+        borderClass: 'border-red-200',
+        iconBgClass: 'bg-red-100',
+        iconColorClass: 'text-red-600',
+        textColorClass: 'text-red-600',
+        actionColorClass: 'text-red-600',
+        href: '/manage-expirations',
+        date: new Date().toISOString(),
+        read: false
+      });
+    }
+    
+    // Ajouter la notification pour les produits qui arrivent à expiration si nécessaire
+    if (hasExpiringSoonItems) {
+      newNotifications.push({
+        id: 'expiring-soon',
+        title: 'Alerte : Bientôt périmés',
+        message: `${expiringSoonItems.length} produit${expiringSoonItems.length > 1 ? 's' : ''} arrive${expiringSoonItems.length > 1 ? 'nt' : ''} à expiration`,
+        icon: Bell,
+        bgClass: 'bg-amber-50',
+        borderClass: 'border-amber-200',
+        iconBgClass: 'bg-amber-100',
+        iconColorClass: 'text-amber-600',
+        textColorClass: 'text-amber-600',
+        actionColorClass: 'text-amber-600',
+        href: '/manage-expirations',
+        date: new Date().toISOString(),
+        read: false
+      });
+    }
+    
+    // Exemple de notification informative (pour démonstration)
+    newNotifications.push({
+      id: 'info-example',
+      title: 'Information',
+      message: 'Bienvenue dans votre centre de notifications',
+      icon: Info,
+      bgClass: 'bg-green-50',
+      borderClass: 'border-green-200',
+      iconBgClass: 'bg-green-100',
+      iconColorClass: 'text-green-600',
+      textColorClass: 'text-green-600',
+      actionColorClass: 'text-green-600',
+      href: '#',
+      date: new Date(Date.now() - 86400000).toISOString(), // 1 jour avant
+      read: false
+    });
+    
+    // Trier les notifications par date (les plus récentes en premier)
+    newNotifications.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    
+    // Mettre à jour l'état des notifications
+    setNotifications(newNotifications);
+    
+    // Mettre à jour le nombre de notifications non lues
+    setNotificationCount(newNotifications.filter(notification => !notification.read).length);
   }, []);
   
+  // Mettre à jour le nombre de notifications non lues lorsque les notifications changent
+  useEffect(() => {
+    setNotificationCount(notifications.filter(notification => !notification.read).length);
+  }, [notifications]);
+  
   return (
-    <NotificationContext.Provider value={{ notificationCount, showBadges, toggleShowBadges }}>
+    <NotificationContext.Provider value={{ 
+      notificationCount, 
+      showBadges, 
+      toggleShowBadges, 
+      notifications, 
+      markAsRead, 
+      markAllAsRead, 
+      deleteNotification 
+    }}>
       {children}
     </NotificationContext.Provider>
   );
