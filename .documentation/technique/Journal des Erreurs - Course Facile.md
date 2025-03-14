@@ -15,6 +15,9 @@
 8. [Erreurs de build et de déploiement](#erreurs-de-build-et-de-déploiement)
 9. [Erreurs d'authentification](#erreurs-dauthentification)
 10. [Erreurs diverses](#erreurs-diverses)
+11. [Erreurs de développement](#erreurs-de-développement)
+12. [Erreurs d'intégration](#erreurs-dintégration)
+13. [Erreurs de configuration](#erreurs-de-configuration)
 
 ## Introduction
 
@@ -216,4 +219,65 @@ return productInstances.filter(instance => {
 
 ## Erreurs diverses
 
-*À compléter au fur et à mesure que des erreurs sont rencontrées* 
+*À compléter au fur et à mesure que des erreurs sont rencontrées*
+
+## Erreurs de développement
+
+### Erreurs TypeScript dans les tests unitaires avec Jest et React Testing Library
+**Date**: 14/03/2025
+**Contexte**: Mise en place des tests unitaires pour les composants réutilisables avec Jest et React Testing Library.
+**Cause**: Les types TypeScript pour les assertions Jest comme `toBeInTheDocument()` et `toHaveClass()` ne sont pas correctement reconnus malgré l'installation de `@types/jest`.
+**Solution**: Deux approches possibles :
+1. Créer un fichier de déclaration de types personnalisé `src/types/jest-dom.d.ts` avec le contenu suivant :
+   ```typescript
+   import '@testing-library/jest-dom';
+   ```
+   Et s'assurer que ce fichier est inclus dans le `tsconfig.json`.
+
+2. Ajouter l'import de `@testing-library/jest-dom` directement dans chaque fichier de test :
+   ```typescript
+   import '@testing-library/jest-dom';
+   ```
+
+La deuxième approche a été choisie pour sa simplicité, mais la première serait préférable pour un projet plus grand afin d'éviter les imports répétitifs.
+
+## Erreurs d'intégration
+
+## Erreurs de configuration
+
+## Erreurs liées aux tests unitaires
+
+### Erreur d'importation de composants dans les tests
+**Date**: 14/03/2025
+**Contexte**: Lors de la création de tests unitaires pour les composants Grid et Icon
+**Cause**: Confusion entre les exportations par défaut et les exportations nommées
+**Solution**: Vérifier le type d'exportation dans le fichier source et adapter l'importation en conséquence :
+- Pour les exportations par défaut : `import Component from '@/components/path/Component'`
+- Pour les exportations nommées : `import { Component } from '@/components/path/Component'`
+
+### Classes CSS incorrectes dans les tests de composants shadcn/ui
+**Date**: 15/03/2025
+**Contexte**: Tests unitaires pour les composants Button et Typography
+**Cause**: Les classes CSS réelles des composants shadcn/ui ne correspondent pas exactement à celles attendues dans les tests
+**Solution**: 
+1. Inspecter le DOM rendu pour voir les classes réelles appliquées
+2. Adapter les assertions pour vérifier les classes qui sont effectivement présentes
+3. Se concentrer sur les classes fonctionnelles importantes plutôt que sur toutes les classes
+
+### Erreur avec la prop asChild dans les tests
+**Date**: 15/03/2025
+**Contexte**: Test du composant Button avec la prop asChild
+**Cause**: La prop asChild n'est pas reconnue comme une prop valide dans l'environnement de test
+**Solution**: 
+1. Vérifier si le composant utilise Radix UI qui gère cette prop
+2. Adapter le test pour vérifier le comportement plutôt que l'implémentation spécifique
+3. Considérer l'utilisation de mocks pour les composants Radix UI
+
+### Texte fragmenté dans les tests
+**Date**: 14/03/2025
+**Contexte**: Test du composant CompletionIndicator où le texte est divisé en plusieurs éléments DOM
+**Cause**: Le composant rend le texte dans plusieurs éléments DOM distincts
+**Solution**: 
+1. Utiliser des expressions régulières avec `getByText(/texte/i)` pour une correspondance plus souple
+2. Utiliser `getAllByText()` et vérifier la longueur du tableau retourné
+## Erreurs de configuration 

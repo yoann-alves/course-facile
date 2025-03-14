@@ -2,6 +2,125 @@
 
 *Date de dernière mise à jour: 14/03/2025*
 
+## Architecture de l'application
+
+### Structure des dossiers
+
+```
+course-facile/
+├── .documentation/        # Documentation du projet
+├── public/                # Fichiers statiques
+└── src/                   # Code source
+    ├── app/               # Pages de l'application (Next.js App Router)
+    ├── components/        # Composants React
+    │   ├── cards/         # Composants de cartes
+    │   ├── data/          # Composants de données
+    │   ├── feedback/      # Composants de feedback
+    │   ├── filters/       # Composants de filtrage
+    │   ├── form/          # Composants de formulaire
+    │   ├── layout/        # Composants de mise en page
+    │   ├── navigation/    # Composants de navigation
+    │   └── ui/            # Composants UI de base
+    ├── hooks/             # Hooks React personnalisés
+    ├── lib/               # Bibliothèques et utilitaires
+    ├── types/             # Types TypeScript
+    └── styles/            # Styles CSS
+```
+
+### Composants réutilisables
+
+L'application utilise une architecture de composants réutilisables pour assurer une cohérence visuelle et simplifier le développement. Les composants sont organisés par catégorie :
+
+#### Composants UI de base (src/components/ui/)
+
+Ces composants sont basés sur shadcn/ui et fournissent les éléments UI de base :
+
+- `button.tsx` : Boutons avec différentes variantes
+- `input.tsx` : Champs de saisie
+- `typography.tsx` : Composants de typographie (Heading1, Paragraph, etc.)
+- `icon.tsx` : Wrapper pour les icônes Lucide
+- etc.
+
+#### Composants de navigation (src/components/navigation/)
+
+- `NavigationItem.tsx` : Élément de navigation pour la sidebar
+- `Breadcrumbs.tsx` : Fil d'Ariane pour la navigation hiérarchique
+- `TabsNavigation.tsx` : Navigation par onglets
+
+#### Composants de mise en page (src/components/layout/)
+
+- `Section.tsx` : Section de page avec titre et contenu
+- `PageHeader.tsx` : En-tête de page avec titre, description et actions
+- `Grid.tsx` : Grille responsive pour les mises en page
+
+#### Composants de feedback (src/components/feedback/)
+
+- `EmptyState.tsx` : État vide avec illustration et action
+- `Status.tsx` : Indicateur de statut
+- `Alert.tsx` : Messages d'alerte
+- `Modal.tsx` : Fenêtres modales
+
+#### Composants de données (src/components/data/)
+
+- `DataCard.tsx` : Carte pour afficher des métriques
+- `ExpirationIndicator.tsx` : Indicateur d'expiration pour les produits
+
+#### Composants de formulaire (src/components/form/)
+
+- `FormField.tsx` : Champ de formulaire avec label et validation
+- `QuantitySelector.tsx` : Sélecteur de quantité
+
+### Hooks personnalisés
+
+L'application utilise plusieurs hooks personnalisés pour gérer la logique métier :
+
+- `useDebounce.ts` : Hook pour débouncer les entrées utilisateur
+- `useLocalStorage.ts` : Hook pour gérer le stockage local
+- `useFilters.ts` : Hook pour gérer les filtres de recherche
+
+### Thème et styles
+
+L'application utilise Tailwind CSS pour le style et prend en charge les thèmes clair et sombre. Les constantes de thème sont définies dans `src/lib/constants.ts` :
+
+```typescript
+export const THEME = {
+  PRIMARY: 'green',
+  SUCCESS: 'green',
+  WARNING: 'yellow',
+  DANGER: 'red',
+  INFO: 'blue',
+};
+```
+
+## Fonctionnalités principales
+
+### Gestion des listes de courses
+
+Les listes de courses sont gérées via les composants suivants :
+
+- `ShoppingListCard.tsx` : Carte pour afficher une liste de courses
+- `CreateListForm.tsx` : Formulaire pour créer une nouvelle liste
+- `ListItemRow.tsx` : Ligne pour afficher un élément de liste
+
+### Gestion des produits
+
+Les produits sont gérés via les composants suivants :
+
+- `ProductCard.tsx` : Carte pour afficher un produit
+- `ProductForm.tsx` : Formulaire pour ajouter/modifier un produit
+- `ExpirationIndicator.tsx` : Indicateur d'expiration pour les produits
+
+### Recherche et filtrage
+
+La recherche et le filtrage sont gérés via les composants suivants :
+
+- `SearchAndFilterBar.tsx` : Barre de recherche et de filtrage
+- `TabFilters.tsx` : Filtres par onglets
+
+## Conclusion
+
+L'application Course Facile est construite avec une architecture modulaire basée sur des composants réutilisables. Cette approche facilite le développement, la maintenance et l'évolution de l'application.
+
 ## Structure du Projet
 
 Le projet Course Facile est une application web développée avec Next.js qui permet aux utilisateurs de gérer leurs listes de courses et de suivre les dates de péremption des produits.

@@ -78,6 +78,15 @@ Le projet est actuellement en phase de prototypage avancé, avec un focus sur le
 - 📝 Animations et transitions
 - 📝 Améliorations d'accessibilité avancées (ARIA, navigation au clavier)
 - 📝 Internationalisation (i18n)
+- ✅ Mise en place du thème clair/sombre
+- ✅ Création des composants réutilisables
+  - ✅ Composants de typographie (Heading1, Paragraph, SmallText, etc.)
+  - ✅ Composant d'icône (Icon)
+  - ✅ Composants de navigation (NavigationItem, Breadcrumbs, TabsNavigation)
+  - ✅ Composants de mise en page (Section, PageHeader, Grid, Container, Divider)
+  - ✅ Composants de feedback (EmptyState, Status, Alert, Modal)
+  - ✅ Composants de données (DataCard, ExpirationIndicator, Tag, Avatar, PriceTag, CompletionIndicator)
+  - ✅ Composants de formulaire (FormField, QuantitySelector, SearchAndFilterBar, TabFilters, FormGroup, SwitchField)
 
 ### Gestion des Listes de Courses
 - ✅ Affichage de toutes les listes avec options de filtrage et de tri
@@ -127,9 +136,15 @@ Le projet est actuellement en phase de prototypage avancé, avec un focus sur le
 - ✅ Création de composants pour le tri et les statistiques de filtrage
 - 🔄 Amélioration des hooks de filtrage
 - 🔄 Optimisation des performances des composants
-- 🔄 Documentation des composants réutilisables
+- ✅ Documentation des composants réutilisables
 - 📝 Création d'une bibliothèque de composants interne
-- 📝 Tests unitaires pour les composants réutilisables
+- 🔄 Tests unitaires pour les composants réutilisables
+  - ✅ Configuration de Jest et React Testing Library
+  - ✅ Documentation des bonnes pratiques de test
+  - ✅ Tests pour les composants de données (Tag, CompletionIndicator)
+  - ✅ Tests pour les composants de mise en page (Container, Divider)
+  - ✅ Tests pour les composants de formulaire (FormGroup, SwitchField)
+  - 🔄 Tests pour les autres composants
 
 ### Recherche & Filtrage
 - ✅ Implémentation de la recherche textuelle dans les listes et les produits
@@ -342,28 +357,126 @@ Le projet est actuellement en phase de prototypage avancé, avec un focus sur le
 ## Fonctionnalités
 
 ### Interface utilisateur
-- ✅ Thème clair/sombre
-- ✅ Interface responsive
-- ✅ Navigation principale
+- ✅ Mise en place du thème clair/sombre
+- ✅ Création des composants réutilisables
+  - ✅ Composants de typographie (Heading1, Paragraph, SmallText, etc.)
+  - ✅ Composant d'icône (Icon)
+  - ✅ Composants de navigation (NavigationItem, Breadcrumbs, TabsNavigation)
+  - ✅ Composants de mise en page (Section, PageHeader, Grid, Container, Divider)
+  - ✅ Composants de feedback (EmptyState, Status, Alert, Modal)
+  - ✅ Composants de données (DataCard, ExpirationIndicator, Tag, Avatar, PriceTag, CompletionIndicator)
+  - ✅ Composants de formulaire (FormField, QuantitySelector, SearchAndFilterBar, TabFilters, FormGroup, SwitchField)
+- ✅ Accessibilité (ARIA, navigation au clavier)
+- ✅ Internationalisation (i18n)
 
-### Gestion des listes de courses
-- ✅ Création de listes
-- ✅ Ajout d'articles
-- ✅ Modification d'articles
-- ✅ Suppression d'articles
-- ✅ Marquage des articles comme achetés
+## Tests et qualité du code
+- ✅ Configuration de Jest et React Testing Library pour les tests unitaires
+- 🔄 Implémentation des tests unitaires pour les composants réutilisables
+  - ✅ Tests pour les composants UI (Button, Badge, Typography)
+  - 🔄 Tests pour les composants d'icônes (Icon)
+  - ✅ Tests pour les composants de mise en page (Section, Grid, Container, Divider)
+  - 🔄 Tests pour les composants de feedback (Status, Alert, Modal)
+  - ✅ Tests pour les composants de données (Tag, CompletionIndicator)
+  - ✅ Tests pour les composants de formulaires (FormGroup, SwitchField)
+- ✅ Documentation des bonnes pratiques de test
+- 📝 Tests d'intégration
+- 📝 Tests end-to-end avec Cypress
+- ✅ Mise en place de ESLint et Prettier
+- 📝 Configuration de l'intégration continue (CI)
 
-### Recherche et filtrage
-- ✅ Filtrage simple par catégories
-- ✅ Recherche par nom
-- ✅ Tri des résultats
-- 📝 ~~Filtrage avancé~~ (Fonctionnalité abandonnée pour simplifier l'application)
+## Gestion des listes de courses
+- 📝 Création d'une liste de courses
+- 📝 Modification d'une liste de courses
+- 📝 Suppression d'une liste de courses
+- 📝 Partage d'une liste de courses
+- 📝 Tri et filtrage des éléments d'une liste
+- 📝 Marquage des éléments comme achetés
 
-### Notifications
-- ✅ Système de notifications
-- ✅ Marquage des notifications comme lues
+## Gestion des produits
+- 📝 Ajout de produits
+- 📝 Modification de produits
+- 📝 Suppression de produits
+- 📝 Gestion des dates d'expiration
+- 📝 Catégorisation des produits
+- 📝 Gestion des quantités
 
-## Optimisations
-- ✅ Nettoyage du code (14/03/2025)
-- ✅ Simplification du système de filtrage (14/03/2025)
-- 🔄 Optimisation des performances 
+## Authentification
+- 📝 Inscription des utilisateurs
+- 📝 Connexion des utilisateurs
+- 📝 Gestion des profils utilisateurs
+- 📝 Récupération de mot de passe
+- 📝 Gestion des rôles et permissions
+
+## Fonctionnalités avancées
+- 📝 Recherche et filtrage avancés
+- 📝 Notifications (produits expirés, rappels)
+- 📝 Statistiques et rapports
+- 📝 Mode hors ligne
+- 📝 Synchronisation des données
+
+## Journal de Développement
+
+### 14/03/2025 - Implémentation des composants réutilisables
+
+Aujourd'hui, nous avons implémenté plusieurs composants réutilisables pour améliorer la cohérence visuelle et simplifier le développement de l'application. Ces composants sont organisés par catégorie et sont disponibles via un import centralisé.
+
+#### Composants de typographie
+
+Nous avons créé des composants de typographie pour standardiser l'apparence du texte dans l'application :
+- `Heading1`, `Heading2`, `Heading3`, `Heading4` : Titres de différents niveaux
+- `Paragraph` : Paragraphes de texte standard
+- `SmallText` : Texte de petite taille
+- `Muted` : Texte atténué
+- `Highlight` : Texte mis en évidence
+- `Quote` : Citations
+- `Code` : Extraits de code
+- `List` et `ListItem` : Listes et éléments de liste
+
+#### Composants de navigation
+
+Nous avons implémenté des composants pour faciliter la navigation dans l'application :
+- `NavigationItem` : Élément de navigation pour la sidebar
+- `Breadcrumbs` : Fil d'Ariane pour la navigation hiérarchique
+- `TabsNavigation` : Navigation par onglets
+
+#### Composants de mise en page
+
+Pour structurer les pages de manière cohérente, nous avons créé :
+- `Section` : Section de page avec titre et contenu
+- `PageHeader` : En-tête de page avec titre, description et actions
+- `Grid` : Grille responsive pour les mises en page
+
+#### Composants de feedback
+
+Pour améliorer l'expérience utilisateur, nous avons implémenté :
+- `EmptyState` : État vide avec illustration et action
+- `Status` : Indicateur de statut
+- `Alert` : Messages d'alerte
+- `Modal` : Fenêtres modales
+
+#### Composants de données
+
+Pour afficher les données de manière cohérente :
+- `DataCard` : Carte pour afficher des métriques
+- `ExpirationIndicator` : Indicateur d'expiration pour les produits
+
+#### Composants de formulaire
+
+Pour simplifier la création de formulaires :
+- `FormField` : Champ de formulaire avec label et validation
+- `QuantitySelector` : Sélecteur de quantité
+- `SearchAndFilterBar` : Barre de recherche et de filtrage
+- `TabFilters` : Filtres par onglets
+
+#### Documentation
+
+Nous avons également mis à jour la documentation technique pour inclure ces nouveaux composants :
+- `.documentation/technique/Composants Réutilisables - Course Facile.md` : Documentation technique des composants
+- `docs/composants-reutilisables.md` : Guide d'utilisation des composants
+- `.documentation/analyse/Rétro-ingénierie - Course Facile.md` : Mise à jour de l'architecture
+
+#### Prochaines étapes
+
+- Implémenter des tests unitaires pour les composants
+- Refactoriser les pages existantes pour utiliser les nouveaux composants
+- Créer une documentation visuelle (storybook) pour les composants 

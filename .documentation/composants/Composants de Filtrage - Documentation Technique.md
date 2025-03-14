@@ -229,8 +229,8 @@ import { FilterType } from '@/types';
 
 export default function ShoppingListsPage({ lists }) {
   const [activeTab, setActiveTab] = useState<FilterType>('all');
-  
-  const {
+
+const {
     searchTerm,
     sortOrder,
     sortField,
@@ -265,7 +265,7 @@ export default function ShoppingListsPage({ lists }) {
   
   return (
     <div>
-      <TabFilters
+<TabFilters 
         tabs={[
           { id: 'all', label: 'Toutes', count: lists.length },
           { id: 'active', label: 'En cours', count: lists.filter(list => !list.completed).length },
@@ -276,13 +276,13 @@ export default function ShoppingListsPage({ lists }) {
         onTabChange={handleTabChange}
         variant="pills"
         showBadges
-      />
-      
-      <SearchAndFilterBar
-        searchTerm={searchTerm}
-        onSearchChange={setSearchTerm}
-        sortOrder={sortOrder}
-        onSortToggle={toggleSortOrder}
+/>
+
+<SearchAndFilterBar
+  searchTerm={searchTerm}
+  onSearchChange={setSearchTerm}
+  sortOrder={sortOrder}
+  onSortToggle={toggleSortOrder}
         sortField={sortField}
         onSortFieldChange={changeSortField}
         sortFields={[
@@ -298,7 +298,7 @@ export default function ShoppingListsPage({ lists }) {
         {filteredItems.map(list => (
           <ShoppingListCard key={list.id} list={list} />
         ))}
-      </div>
-    </div>
+  </div>
+</div>
   );
 } 
