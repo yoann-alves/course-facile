@@ -116,9 +116,7 @@ Le projet est actuellement en phase de prototypage avancé, avec un focus sur le
 - 🔄 Amélioration du système de suivi des dates de péremption
 - 🔄 Optimisation de l'interface de gestion des péremptions
 - 📝 Notifications pour les produits bientôt périmés
-- 📝 Suggestions automatiques basées sur les produits bientôt périmés
 - 📝 Statistiques sur le gaspillage alimentaire
-- 📝 Conseils de conservation pour prolonger la durée de vie des produits
 
 ### Composants Réutilisables
 - ✅ Création de composants de filtrage réutilisables (SearchAndFilterBar, TabFilters, AdvancedFilters)
@@ -140,13 +138,6 @@ Le projet est actuellement en phase de prototypage avancé, avec un focus sur le
 - ✅ Tri des résultats par différents critères
 - ✅ Persistance des filtres dans le localStorage
 - 🔄 Debounce de la recherche
-- 🔄 Historique des filtres (undo/redo)
-- 🔄 Statistiques de filtrage
-- 🔄 Optimisation des performances de recherche
-- 📝 Suggestions intelligentes basées sur l'historique
-- 📝 Recherche par catégorie ou par attributs
-- 📝 Recherche avancée avec opérateurs logiques
-- 📝 Filtres personnalisables par l'utilisateur
 
 ### Expérience Utilisateur
 - ✅ Simplification du flux utilisateur pour la création de liste
@@ -163,11 +154,9 @@ Le projet est actuellement en phase de prototypage avancé, avec un focus sur le
 
 ## Prochaines étapes
 
-### Priorités à court terme (1-2 mois)
+### Priorités à court terme
 1. **Finaliser l'optimisation des composants de filtrage**
    - Terminer l'implémentation du debounce de la recherche
-   - Implémenter l'historique des filtres (undo/redo)
-   - Ajouter les statistiques de filtrage
 
 2. **Implémenter les fonctionnalités d'édition des listes et des produits**
    - Améliorer l'interface d'édition des listes
@@ -179,7 +168,7 @@ Le projet est actuellement en phase de prototypage avancé, avec un focus sur le
    - Améliorer la réactivité sur les appareils mobiles
    - Ajouter des animations subtiles pour les transitions
 
-### Priorités à moyen terme (3-6 mois)
+### Priorités à moyen terme
 1. **Développer le système de partage de listes**
    - Implémenter la fonctionnalité de partage par email
    - Ajouter la gestion des permissions (lecture, écriture)
@@ -200,7 +189,7 @@ Le projet est actuellement en phase de prototypage avancé, avec un focus sur le
      - Fonctionnalités temps réel pour les listes partagées
      - Recherche avancée pour les produits
 
-### Priorités à long terme (6+ mois)
+### Priorités à long terme
 1. **Fonctionnalités avancées**
    - Système de notifications personnalisables
    - Gestion des courses (saisie des prix, calcul du total)
@@ -348,4 +337,33 @@ Le projet est actuellement en phase de prototypage avancé, avec un focus sur le
 - [Guide Utilisateur](../utilisateur/Guide%20Utilisateur%20-%20Course%20Facile.md)
 - [Bonnes Pratiques](../technique/Bonnes%20Pratiques%20-%20Course%20Facile.md)
 - [Composants de Filtrage - Documentation Technique](../composants/Composants%20de%20Filtrage%20-%20Documentation%20Technique.md)
-- [Rétro-ingénierie](../analyse/Rétro-ingénierie%20-%20Course%20Facile.md) 
+- [Rétro-ingénierie](../analyse/Rétro-ingénierie%20-%20Course%20Facile.md)
+
+## Fonctionnalités
+
+### Interface utilisateur
+- ✅ Thème clair/sombre
+- ✅ Interface responsive
+- ✅ Navigation principale
+
+### Gestion des listes de courses
+- ✅ Création de listes
+- ✅ Ajout d'articles
+- ✅ Modification d'articles
+- ✅ Suppression d'articles
+- ✅ Marquage des articles comme achetés
+
+### Recherche et filtrage
+- ✅ Filtrage simple par catégories
+- ✅ Recherche par nom
+- ✅ Tri des résultats
+- 📝 ~~Filtrage avancé~~ (Fonctionnalité abandonnée pour simplifier l'application)
+
+### Notifications
+- ✅ Système de notifications
+- ✅ Marquage des notifications comme lues
+
+## Optimisations
+- ✅ Nettoyage du code (14/03/2025)
+- ✅ Simplification du système de filtrage (14/03/2025)
+- 🔄 Optimisation des performances 

@@ -293,4 +293,89 @@ Le projet est actuellement en mode prototypage, avec une concentration sur le d�
 
 ## Documentation
 
-Une documentation complète sur l'utilisation de ces composants est disponible dans `.documentation/composants-filtres.md`. 
+Une documentation complète sur l'utilisation de ces composants est disponible dans `.documentation/composants-filtres.md`.
+
+## Système de filtrage
+
+### Vue d'ensemble
+
+Le système de filtrage de Course Facile a été simplifié pour se concentrer sur les fonctionnalités essentielles. Il est composé de plusieurs composants et hooks qui permettent de filtrer, rechercher et trier les données de manière efficace.
+
+### Composants principaux
+
+- **TabFilters** : Composant pour afficher des filtres sous forme d'onglets.
+- **SearchAndFilterBar** : Composant pour afficher une barre de recherche avec des options de tri.
+- **SearchInput** : Composant pour afficher un champ de recherche avec debounce.
+- **SortButton** : Composant pour afficher un bouton de tri.
+- **FilterStats** : Composant pour afficher des statistiques sur les filtres.
+
+### Hooks
+
+- **useFilters** : Hook principal pour gérer les filtres, la recherche et le tri.
+- **useDebounce** : Hook utilitaire pour ajouter un délai de debounce à une valeur.
+
+### Flux de données
+
+1. L'utilisateur interagit avec les composants de filtrage (TabFilters, SearchAndFilterBar).
+2. Les composants appellent les fonctions fournies par le hook useFilters.
+3. Le hook useFilters filtre et trie les données en fonction des critères spécifiés.
+4. Les données filtrées sont renvoyées au composant parent qui les affiche.
+
+### Exemple d'utilisation
+
+```tsx
+const {
+  searchTerm,
+  sortOrder,
+  sortField,
+  filteredItems,
+  filterStats,
+  setSearchTerm,
+  toggleSortOrder,
+  changeSortField
+} = useFilters(items, {
+  initialFilters: { status: activeTab },
+  initialSortOrder: 'desc',
+  initialSortField: 'updatedAt',
+  searchFields: ['title'],
+  persistKey: 'shopping-lists-filters',
+  filterFn: (item, filters, searchTerm) => {
+    // Logique de filtrage personnalisée
+    return true;
+  }
+});
+```
+
+### Fonctionnalités clés
+
+- **Filtrage par onglets** : Permet de filtrer les données par catégories principales.
+- **Recherche textuelle** : Permet de rechercher des éléments par leur nom ou d'autres champs.
+- **Tri** : Permet de trier les données par différents champs et dans différents ordres.
+- **Persistance** : Les filtres sont sauvegardés dans le localStorage pour être restaurés lors du rechargement de la page.
+- **Debounce** : La recherche est debounced pour éviter trop de rendus pendant la frappe.
+- **Statistiques** : Des statistiques sur les filtres sont calculées et affichées.
+
+### Modifications récentes
+
+Le système de filtrage a été simplifié en supprimant les fonctionnalités de filtrage avancé qui n'étaient pas nécessaires. Les fichiers suivants ont été supprimés :
+
+- `src/components/filters/AdvancedFilters.tsx`
+- `src/hooks/useAdvancedFilters.ts`
+
+Le hook `useFilters.ts` a été simplifié pour ne conserver que les fonctionnalités essentielles, et les types liés au filtrage avancé ont été supprimés de `src/types/index.ts`.
+
+### Fonctions utilitaires
+
+Les fonctions utilitaires suivantes ont été modifiées pour accepter à la fois des instances de produit et des chaînes de caractères :
+
+- **isExpired** : Vérifie si un produit est périmé.
+- **daysUntilExpiration** : Calcule le nombre de jours avant péremption.
+- **getProductDetails** : Obtient les détails d'un produit à partir de son instance ou de son ID.
+
+### Bonnes pratiques
+
+1. Utiliser TabFilters pour les filtres principaux.
+2. Utiliser SearchAndFilterBar pour la recherche et le tri.
+3. Persister les filtres avec l'option persistKey du hook useFilters.
+4. Toujours utiliser un délai de debounce pour la recherche.
+5. Afficher les statistiques de filtrage pour donner un retour visuel à l'utilisateur. 

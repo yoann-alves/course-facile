@@ -173,9 +173,12 @@ export const productInstances: ProductInstance[] = [
   }
 ];
 
-// Fonction utilitaire pour obtenir les détails d'un produit à partir de son instance
-export function getProductDetails(instance: ProductInstance): Product | undefined {
-  return products.find(product => product.id === instance.productId);
+// Fonction utilitaire pour obtenir les détails d'un produit à partir de son instance ou de son ID
+export function getProductDetails(instanceOrId: ProductInstance | string): Product | undefined {
+  const productId = typeof instanceOrId === 'string' 
+    ? instanceOrId 
+    : instanceOrId.productId;
+  return products.find(product => product.id === productId);
 }
 
 // Fonction utilitaire pour obtenir toutes les instances d'un produit
@@ -184,16 +187,20 @@ export function getProductInstances(productId: string): ProductInstance[] {
 }
 
 // Fonction utilitaire pour vérifier si un produit est périmé
-export function isExpired(instance: ProductInstance): boolean {
+export function isExpired(instance: ProductInstance | string): boolean {
   const now = new Date();
-  const expirationDate = new Date(instance.expirationDate);
+  const expirationDate = typeof instance === 'string' 
+    ? new Date(instance) 
+    : new Date(instance.expirationDate);
   return expirationDate < now;
 }
 
 // Fonction utilitaire pour calculer le nombre de jours avant péremption
-export function daysUntilExpiration(instance: ProductInstance): number {
+export function daysUntilExpiration(instance: ProductInstance | string): number {
   const now = new Date();
-  const expirationDate = new Date(instance.expirationDate);
+  const expirationDate = typeof instance === 'string' 
+    ? new Date(instance) 
+    : new Date(instance.expirationDate);
   const diffTime = expirationDate.getTime() - now.getTime();
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 } 

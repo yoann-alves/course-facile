@@ -2,608 +2,303 @@
 
 *Date de dernière mise à jour: 14/03/2025*
 
-## Table des matières
+## Vue d'ensemble
 
-1. [Introduction](#introduction)
-2. [Composants disponibles](#composants-disponibles)
-3. [SearchAndFilterBar](#searchandfilterbar)
-4. [TabFilters](#tabfilters)
-5. [AdvancedFilters](#advancedfilters)
-6. [Hooks personnalisés](#hooks-personnalisés)
-   - [useFilters](#usefilters)
-   - [useAdvancedFilters](#useadvancedfilters)
-7. [Optimisations](#optimisations)
-8. [Exemples d'utilisation](#exemples-dutilisation)
-9. [Prochaines étapes](#prochaines-étapes)
+Le système de filtrage de Course Facile a été simplifié pour se concentrer sur les fonctionnalités essentielles. Cette documentation décrit les composants et hooks disponibles pour implémenter le filtrage, la recherche et le tri dans l'application.
 
-## Introduction
+## Composants
 
-Cette documentation technique présente les composants de filtrage et de recherche réutilisables dans l'application Course Facile. Ces composants ont été conçus pour être flexibles, performants et faciles à utiliser dans différentes parties de l'application.
+### TabFilters
 
-## Composants disponibles
+Composant pour afficher des filtres sous forme d'onglets.
 
-L'application dispose de trois composants principaux pour gérer les filtres et la recherche :
+**Fichier**: `src/components/filters/TabFilters.tsx`
 
-- **SearchAndFilterBar** : Barre de recherche avec option de tri
-- **TabFilters** : Filtres par onglets avec compteurs
-- **AdvancedFilters** : Filtres avancés avec options multiples
+**Props**:
+- `tabs`: Tableau d'objets représentant les onglets
+- `activeTab`: ID de l'onglet actif
+- `onTabChange`: Fonction appelée lors du changement d'onglet
+- `className`: Classes CSS additionnelles
+- `variant`: Style des onglets ('default', 'pills', 'underline', 'minimal')
+- `size`: Taille des onglets ('sm', 'md', 'lg')
+- `fullWidth`: Si les onglets doivent prendre toute la largeur disponible
+- `showCounts`: Si les compteurs doivent être affichés
+- `showBadges`: Si les compteurs doivent être affichés sous forme de badges
+- `animate`: Si les animations doivent être activées
 
-Et deux hooks personnalisés :
+**Exemple d'utilisation**:
+```tsx
+<TabFilters
+  tabs={[
+    { id: 'all', label: 'Tous', count: 10 },
+    { id: 'active', label: 'Actifs', count: 5 },
+    { id: 'completed', label: 'Terminés', count: 5 }
+  ]}
+  activeTab="all"
+  onTabChange={(tabId) => setActiveTab(tabId)}
+  variant="pills"
+  size="md"
+/>
+```
 
-- **useFilters** : Hook général pour gérer les filtres, la recherche et le tri
-- **useAdvancedFilters** : Hook spécifique pour gérer les filtres avancés
+### SearchAndFilterBar
 
-## SearchAndFilterBar
+Composant pour afficher une barre de recherche avec des options de tri.
 
-Ce composant fournit une barre de recherche et un bouton de tri.
+**Fichier**: `src/components/filters/SearchAndFilterBar.tsx`
 
-### Props
+**Props**:
+- `searchTerm`: Terme de recherche
+- `onSearchChange`: Fonction appelée lors du changement du terme de recherche
+- `sortOrder`: Ordre de tri ('asc' ou 'desc')
+- `onSortToggle`: Fonction appelée lors du changement d'ordre de tri
+- `sortLabel`: Libellés pour les ordres de tri
+- `searchPlaceholder`: Texte d'invite pour la recherche
+- `className`: Classes CSS additionnelles
+- `debounceMs`: Délai de debounce pour la recherche
+- `onResetSearch`: Fonction appelée lors de la réinitialisation de la recherche
+- `showResetButton`: Si le bouton de réinitialisation doit être affiché
+- `sortField`: Champ de tri actuel
+- `onSortFieldChange`: Fonction appelée lors du changement de champ de tri
+- `sortFields`: Champs de tri disponibles
+- `filterStats`: Statistiques sur les filtres
 
-| Prop | Type | Description | Défaut |
-|------|------|-------------|--------|
-| searchTerm | string | Terme de recherche actuel | - |
-| onSearchChange | (value: string) => void | Fonction appelée lors du changement de recherche | - |
-| sortOrder | 'asc' \| 'desc' | Ordre de tri actuel | - |
-| onSortToggle | () => void | Fonction appelée lors du changement d'ordre de tri | - |
-| sortLabel | { asc: string, desc: string } | Libellés pour les options de tri | { asc: 'Plus anciennes', desc: 'Plus récentes' } |
-| searchPlaceholder | string | Texte d'aide pour la recherche | 'Rechercher...' |
-| className | string | Classes CSS supplémentaires | '' |
-| debounceMs | number | Délai de debounce en millisecondes | 300 |
-| onResetSearch | () => void | Fonction appelée lors de la réinitialisation de la recherche | - |
-| showResetButton | boolean | Afficher le bouton de réinitialisation | false |
-| sortField | string | Champ de tri actuel | - |
-| onSortFieldChange | (field: string) => void | Fonction appelée lors du changement de champ de tri | - |
-| sortFields | Array<{ id: string; label: string; }> | Liste des champs de tri disponibles | - |
-| filterStats | { filteredItemCount: number; totalItemCount: number; filterReductionPercent: number; } | Statistiques de filtrage | - |
-
-### Exemple d'utilisation
-
+**Exemple d'utilisation**:
 ```tsx
 <SearchAndFilterBar
   searchTerm={searchTerm}
   onSearchChange={setSearchTerm}
   sortOrder={sortOrder}
   onSortToggle={toggleSortOrder}
-  sortLabel={{
-    asc: 'Date croissante',
-    desc: 'Date décroissante'
-  }}
-  searchPlaceholder="Rechercher un élément..."
-  debounceMs={300}
-  showResetButton={true}
-  onResetSearch={resetSearch}
+  sortField={sortField}
+  onSortFieldChange={changeSortField}
+  sortFields={[
+    { id: 'name', label: 'Nom' },
+    { id: 'date', label: 'Date' }
+  ]}
   filterStats={filterStats}
 />
 ```
 
-## TabFilters
+### SearchInput
 
-Ce composant affiche des onglets pour filtrer les données avec des compteurs optionnels.
+Composant pour afficher un champ de recherche avec debounce.
 
-### Types
+**Fichier**: `src/components/filters/SearchInput.tsx`
 
-```tsx
-export interface FilterTab {
-  id: string;
-  label: string;
-  count?: number;
-  icon?: React.ReactNode;
-  tooltip?: string;
-  disabled?: boolean;
-}
-```
+**Props**:
+- `value`: Valeur du champ
+- `onChange`: Fonction appelée lors du changement de valeur
+- `placeholder`: Texte d'invite
+- `className`: Classes CSS additionnelles
+- `debounceMs`: Délai de debounce
+- `onReset`: Fonction appelée lors de la réinitialisation
+- `showResetButton`: Si le bouton de réinitialisation doit être affiché
 
-### Props
+### SortButton
 
-| Prop | Type | Description | Défaut |
-|------|------|-------------|--------|
-| tabs | FilterTab[] | Liste des onglets à afficher | - |
-| activeTab | string | ID de l'onglet actif | - |
-| onTabChange | (tabId: string) => void | Fonction appelée lors du changement d'onglet | - |
-| className | string | Classes CSS supplémentaires | '' |
-| variant | 'default' \| 'pills' \| 'underline' \| 'minimal' | Variante de style | 'default' |
-| size | 'sm' \| 'md' \| 'lg' | Taille des onglets | 'md' |
-| fullWidth | boolean | Occuper toute la largeur disponible | false |
-| showCounts | boolean | Afficher les compteurs | true |
-| showBadges | boolean | Afficher les compteurs sous forme de badges | false |
-| animate | boolean | Activer les animations | true |
+Composant pour afficher un bouton de tri.
 
-### Exemple d'utilisation
+**Fichier**: `src/components/filters/SortButton.tsx`
 
-```tsx
-const tabs = [
-  { id: 'all', label: 'Tous', count: 10, icon: <IconAll /> },
-  { id: 'active', label: 'Actifs', count: 5, icon: <IconActive /> },
-  { id: 'completed', label: 'Terminés', count: 5, icon: <IconCompleted /> }
-];
+**Props**:
+- `sortOrder`: Ordre de tri ('asc' ou 'desc')
+- `onSortToggle`: Fonction appelée lors du changement d'ordre de tri
+- `label`: Libellés pour les ordres de tri
+- `className`: Classes CSS additionnelles
 
-<TabFilters
-  tabs={tabs}
-  activeTab={activeFilter}
-  onTabChange={(tabId) => setActiveFilter(tabId)}
-  variant="pills"
-  size="md"
-  animate={true}
-/>
-```
+### FilterStats
 
-## AdvancedFilters
+Composant pour afficher des statistiques sur les filtres.
 
-Ce composant affiche un popover avec des options de filtres avancés.
+**Fichier**: `src/components/filters/FilterStats.tsx`
 
-### Types
+**Props**:
+- `filteredItemCount`: Nombre d'éléments filtrés
+- `totalItemCount`: Nombre total d'éléments
+- `filterReductionPercent`: Pourcentage de réduction
+- `className`: Classes CSS additionnelles
 
-```tsx
-export interface FilterOption {
-  id: string;
-  label: string;
-  checked: boolean;
-  count?: number;
-  disabled?: boolean;
-}
-
-export interface FilterGroup {
-  id: string;
-  label: string;
-  options: FilterOption[];
-}
-```
-
-### Props
-
-| Prop | Type | Description | Défaut |
-|------|------|-------------|--------|
-| filterGroups | FilterGroup[] | Groupes de filtres à afficher | - |
-| onFilterChange | (groupId: string, optionId: string, checked: boolean) => void | Fonction appelée lors du changement d'un filtre | - |
-| onResetFilters | () => void | Fonction appelée lors de la réinitialisation des filtres | - |
-| className | string | Classes CSS supplémentaires | '' |
-| activeFiltersCount | number | Nombre de filtres actifs | 0 |
-| onApplyFilters | () => void | Fonction appelée lors de l'application des filtres | - |
-| onUndoFilterChange | () => void | Fonction appelée pour annuler une modification | - |
-| onRedoFilterChange | () => void | Fonction appelée pour rétablir une modification | - |
-| onCancelChanges | () => void | Fonction appelée pour annuler toutes les modifications | - |
-| canUndo | boolean | Indique si l'annulation est possible | false |
-| canRedo | boolean | Indique si le rétablissement est possible | false |
-| isDirty | boolean | Indique si des modifications non appliquées existent | false |
-| filterStats | { totalGroups: number; totalOptions: number; activeFiltersCount: number; groupStats: { groupId: string; groupLabel: string; totalOptions: number; activeOptions: number; allActive: boolean; noneActive: boolean; }[]; } | Statistiques détaillées des filtres | - |
-
-### Exemple d'utilisation
-
-```tsx
-const filterGroups = [
-  {
-    id: 'categories',
-    label: 'Catégories',
-    options: [
-      { id: 'cat1', label: 'Catégorie 1', checked: false, count: 10 },
-      { id: 'cat2', label: 'Catégorie 2', checked: true, count: 5 }
-    ]
-  },
-  {
-    id: 'status',
-    label: 'Statut',
-    options: [
-      { id: 'active', label: 'Actif', checked: false, count: 8 },
-      { id: 'inactive', label: 'Inactif', checked: false, count: 7 }
-    ]
-  }
-];
-
-<AdvancedFilters
-  filterGroups={filterGroups}
-  onFilterChange={handleFilterChange}
-  onResetFilters={resetFilters}
-  activeFiltersCount={3}
-  onApplyFilters={applyFilters}
-  onUndoFilterChange={undoFilterChange}
-  onRedoFilterChange={redoFilterChange}
-  onCancelChanges={cancelChanges}
-  canUndo={canUndo}
-  canRedo={canRedo}
-  isDirty={isDirty}
-  filterStats={filterStats}
-/>
-```
-
-## Hooks personnalisés
+## Hooks
 
 ### useFilters
 
-Ce hook gère les filtres, la recherche et le tri pour une liste d'éléments.
+Hook pour gérer les filtres, la recherche et le tri.
 
-#### Paramètres
+**Fichier**: `src/hooks/useFilters.ts`
 
-| Paramètre | Type | Description | Défaut |
-|-----------|------|-------------|--------|
-| items | T[] | Liste d'éléments à filtrer | - |
-| options | UseFiltersOptions<T, F> | Options de configuration | {} |
+**Paramètres**:
+- `items`: Éléments à filtrer
+- `options`: Options de configuration
+  - `initialFilters`: Filtres initiaux
+  - `initialSortOrder`: Ordre de tri initial
+  - `initialSortField`: Champ de tri initial
+  - `filterFn`: Fonction de filtrage personnalisée
+  - `searchFields`: Champs sur lesquels effectuer la recherche
+  - `persistKey`: Clé pour persister les filtres dans localStorage
+  - `debounceMs`: Délai de debounce pour la recherche
+  - `defaultComparator`: Comparateur personnalisé pour le tri
 
-#### Options
+**Retourne**:
+- `filters`: État des filtres
+- `searchTerm`: Terme de recherche
+- `debouncedSearchTerm`: Terme de recherche avec debounce
+- `sortOrder`: Ordre de tri
+- `sortField`: Champ de tri
+- `filteredItems`: Éléments filtrés
+- `filterStats`: Statistiques sur les filtres
+- `setSearchTerm`: Fonction pour mettre à jour le terme de recherche
+- `updateFilter`: Fonction pour mettre à jour un filtre
+- `resetFilters`: Fonction pour réinitialiser les filtres
+- `toggleSortOrder`: Fonction pour basculer l'ordre de tri
+- `changeSortField`: Fonction pour changer le champ de tri
 
-```typescript
-interface UseFiltersOptions<T, F extends Record<string, unknown>> {
-  initialFilters?: F;
-  initialSortOrder?: 'asc' | 'desc';
-  initialSortField?: keyof T;
-  filterFn?: (item: T, filters: F, searchTerm: string) => boolean;
-  searchFields?: Array<keyof T>;
-  persistKey?: string;
-  debounceMs?: number;
-  defaultComparator?: <K extends keyof T>(a: T[K], b: T[K], order: 'asc' | 'desc') => number;
-}
-```
-
-#### Valeurs retournées
-
-```typescript
-return {
+**Exemple d'utilisation**:
+```tsx
+const {
   filters,
   searchTerm,
   sortOrder,
   sortField,
   filteredItems,
-  sortedItems,
-  setSearchTerm,
-  updateFilter,
-  resetFilters,
-  toggleSortOrder,
-  changeSortField,
-  undoFilterChange,
-  redoFilterChange,
-  canUndo,
-  canRedo,
-  filterStats
-};
-```
-
-#### Exemple d'utilisation
-
-```tsx
-interface Item {
-  id: string;
-  name: string;
-  category: string;
-  createdAt: string;
-}
-
-interface Filters {
-  category: string;
-}
-
-const items: Item[] = [...];
-
-const {
-  filters,
-  searchTerm,
-  sortOrder,
-  sortedItems,
-  setSearchTerm,
-  updateFilter,
-  resetFilters,
-  toggleSortOrder,
   filterStats,
-  undoFilterChange,
-  redoFilterChange,
-  canUndo,
-  canRedo
-} = useFilters<Item, Filters>(items, {
-  initialFilters: { category: '' },
+  setSearchTerm,
+  updateFilter,
+  resetFilters,
+  toggleSortOrder,
+  changeSortField
+} = useFilters(items, {
+  initialFilters: { category: 'all' },
   initialSortOrder: 'desc',
-  initialSortField: 'createdAt',
-  searchFields: ['name'],
-  persistKey: 'my-filters',
-  debounceMs: 300
+  initialSortField: 'date',
+  searchFields: ['name', 'description'],
+  persistKey: 'shopping-list-filters'
 });
 ```
 
-### useAdvancedFilters
+### useDebounce
 
-Ce hook gère les filtres avancés avec des groupes d'options.
+Hook pour ajouter un délai de debounce à une valeur.
 
-#### Paramètres
+**Fichier**: `src/hooks/useDebounce.ts`
+
+**Paramètres**:
+- `value`: Valeur à debouncer
+- `delay`: Délai en millisecondes
+
+**Retourne**:
+- Valeur avec debounce
+
+**Exemple d'utilisation**:
+```tsx
+const debouncedSearchTerm = useDebounce(searchTerm, 300);
+```
+
+## Types
+
+Les types suivants sont définis dans `src/types/index.ts` pour le système de filtrage :
 
 ```typescript
-interface UseAdvancedFiltersProps {
-  initialFilterGroups: FilterGroup[];
-  persistKey?: string;
-  debounceMs?: number;
-  onFilterChange?: (filterGroups: FilterGroup[]) => void;
-}
+// Types pour les filtres simples
+export type FilterType = 'all' | 'active' | 'completed' | 'recent';
+export type SortType = 'date' | 'name' | 'count';
 ```
 
-#### Valeurs retournées
+## Bonnes pratiques
 
-```typescript
-return {
-  filterGroups,
-  activeFiltersCount,
-  handleFilterChange,
-  resetFilters,
-  applyFiltersToItems,
-  applyFilters,
-  undoFilterChange,
-  redoFilterChange,
-  cancelChanges,
-  canUndo,
-  canRedo,
-  isDirty,
-  filterStats
-};
-```
+1. **Utiliser TabFilters pour les filtres principaux** : Ce composant est idéal pour afficher des filtres sous forme d'onglets, par exemple pour filtrer par statut (tous, actifs, terminés).
 
-#### Exemple d'utilisation
+2. **Utiliser SearchAndFilterBar pour la recherche et le tri** : Ce composant combine un champ de recherche et des options de tri dans une interface unifiée.
+
+3. **Persister les filtres** : Utiliser l'option `persistKey` du hook `useFilters` pour sauvegarder les filtres dans localStorage et les restaurer lors du rechargement de la page.
+
+4. **Debounce pour la recherche** : Toujours utiliser un délai de debounce pour la recherche afin d'éviter trop de rendus pendant la frappe.
+
+5. **Afficher les statistiques de filtrage** : Utiliser le composant `FilterStats` pour donner un retour visuel à l'utilisateur sur l'effet des filtres appliqués.
+
+## Exemples d'intégration
+
+### Exemple complet avec TabFilters et SearchAndFilterBar
 
 ```tsx
-const initialFilterGroups = [
-  {
-    id: 'categories',
-    label: 'Catégories',
-    options: [
-      { id: 'cat1', label: 'Catégorie 1', checked: false },
-      { id: 'cat2', label: 'Catégorie 2', checked: false }
-    ]
-  }
-];
+import { useState } from 'react';
+import TabFilters from '@/components/filters/TabFilters';
+import SearchAndFilterBar from '@/components/filters/SearchAndFilterBar';
+import { useFilters } from '@/hooks/useFilters';
+import { FilterType } from '@/types';
 
-const {
-  filterGroups,
-  activeFiltersCount,
-  handleFilterChange,
-  resetFilters,
-  applyFilters,
-  undoFilterChange,
-  redoFilterChange,
-  cancelChanges,
-  canUndo,
-  canRedo,
-  isDirty,
-  filterStats
-} = useAdvancedFilters({
-  initialFilterGroups,
-  persistKey: 'advanced-filters',
-  debounceMs: 300,
-  onFilterChange: (groups) => console.log('Filters changed:', groups)
-});
-
-// Fonction pour filtrer les éléments
-const filterItems = (item, groups) => {
-  // Logique de filtrage personnalisée
-  return true;
-};
-
-// Appliquer les filtres
-const filteredItems = applyFilters(items, filterItems);
-```
-
-## Optimisations
-
-Les composants et hooks de filtrage ont été optimisés pour offrir de meilleures performances et une meilleure expérience utilisateur :
-
-### Optimisations du Hook `useFilters`
-
-- **Debounce de la recherche** : Ajout d'un délai configurable pour éviter les requêtes trop fréquentes lors de la saisie.
-- **Historique des filtres** : Implémentation d'un système d'historique permettant d'annuler (undo) et de rétablir (redo) les modifications de filtres.
-- **Statistiques de filtrage** : Calcul et exposition de statistiques sur les filtres actifs et leur impact sur les données.
-- **Comparateur personnalisé** : Possibilité de fournir une fonction de comparaison personnalisée pour le tri.
-- **Persistance améliorée** : Utilisation des fonctions utilitaires pour une meilleure gestion de la persistance dans le localStorage.
-- **Mémorisation optimisée** : Utilisation plus efficace de `useMemo` pour éviter les recalculs inutiles.
-- **Typage plus strict** : Contrainte de type `Record<string, unknown>` pour éviter les erreurs de type et améliorer l'autocomplétion.
-- **Gestion des filtres vides** : Meilleure détection des filtres vides ou non définis pour éviter les filtres inutiles.
-
-### Optimisations du Hook `useAdvancedFilters`
-
-- **Historique des filtres** : Système d'historique pour annuler et rétablir les modifications.
-- **État "dirty"** : Suivi des modifications non appliquées pour permettre l'annulation des changements.
-- **Statistiques détaillées** : Calcul de statistiques par groupe de filtres.
-- **Notification des changements** : Possibilité de notifier les composants parents des changements de filtres.
-- **Application explicite des filtres** : Séparation entre la modification et l'application des filtres.
-
-### Améliorations du Composant `SearchAndFilterBar`
-
-- **Debounce intégré** : Gestion du debounce directement dans le composant.
-- **Bouton de réinitialisation** : Ajout d'un bouton pour effacer rapidement la recherche.
-- **Sélection du champ de tri** : Possibilité de choisir le champ sur lequel trier.
-- **Affichage des statistiques** : Visualisation du nombre d'éléments filtrés.
-- **Tooltips** : Ajout d'infobulles pour améliorer l'expérience utilisateur.
-- **Icônes améliorées** : Utilisation d'icônes plus intuitives et cohérentes.
-
-### Améliorations du Composant `TabFilters`
-
-- **Variantes de style** : Ajout de plusieurs variantes de style (default, pills, underline, minimal).
-- **Tailles configurables** : Possibilité de choisir entre différentes tailles (sm, md, lg).
-- **Animations** : Ajout d'animations fluides avec Framer Motion.
-- **Tooltips** : Support des infobulles pour chaque onglet.
-- **Badges** : Option pour afficher les compteurs sous forme de badges.
-- **Icônes** : Support des icônes pour chaque onglet.
-- **État désactivé** : Possibilité de désactiver certains onglets.
-
-### Améliorations du Composant `AdvancedFilters`
-
-- **Boutons d'annulation et de rétablissement** : Ajout de boutons pour annuler et rétablir les modifications.
-- **Statistiques détaillées** : Affichage des statistiques par groupe de filtres.
-- **Boutons d'application et d'annulation** : Séparation entre la modification et l'application des filtres.
-- **Tooltips** : Ajout d'infobulles pour améliorer l'expérience utilisateur.
-- **Compteurs par option** : Possibilité d'afficher le nombre d'éléments pour chaque option.
-- **Options désactivées** : Support des options désactivées.
-
-## Exemples d'utilisation
-
-### Exemple 1 : Page de listes de courses
-
-```tsx
-// Dans src/app/lists/page.tsx
-const [searchTerm, setSearchTerm] = useState('');
-const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
-const [activeFilter, setActiveFilter] = useState<FilterType>('all');
-
-// Configuration des onglets
-const tabs: FilterTab[] = useMemo(() => [
-  {
-    id: 'all',
-    label: 'Toutes',
-    count: lists.length
-  },
-  {
-    id: 'active',
-    label: 'En cours',
-    count: lists.filter(list => !list.completed).length
-  },
-  {
-    id: 'completed',
-    label: 'Terminées',
-    count: lists.filter(list => list.completed).length
-  }
-], [lists]);
-
-// Filtrer et trier les listes
-const filteredLists = useMemo(() => {
-  // Logique de filtrage
-}, [lists, activeFilter, searchTerm]);
-
-const sortedLists = useMemo(() => {
-  // Logique de tri
-}, [filteredLists, sortOrder]);
-
-// Dans le JSX
-<TabFilters 
-  tabs={tabs}
-  activeTab={activeFilter}
-  onTabChange={(tabId) => setActiveFilter(tabId as FilterType)}
-/>
-
-<SearchAndFilterBar
-  searchTerm={searchTerm}
-  onSearchChange={setSearchTerm}
-  sortOrder={sortOrder}
-  onSortToggle={toggleSortOrder}
-  sortLabel={{
-    asc: 'Plus anciennes',
-    desc: 'Plus récentes'
-  }}
-  searchPlaceholder="Rechercher une liste ou un produit..."
-/>
-```
-
-### Exemple 2 : Page d'inventaire avec filtres avancés
-
-```tsx
-// Dans src/app/inventory/page.tsx
-const [searchTerm, setSearchTerm] = useState('');
-const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-
-// Configurer les filtres avancés
-const initialFilterGroups: FilterGroup[] = useMemo(() => [
-  {
-    id: 'categories',
-    label: 'Catégories',
-    options: allCategories.map(category => ({
-      id: category,
-      label: category,
-      checked: false
-    }))
-  },
-  {
-    id: 'status',
-    label: 'Statut',
-    options: [
-      { id: 'expired', label: 'Périmés', checked: false },
-      { id: 'expiringSoon', label: 'Périmant bientôt', checked: false }
-    ]
-  }
-], [allCategories]);
-
-// Utiliser le hook de filtres avancés
-const {
-  filterGroups,
-  activeFiltersCount,
-  handleFilterChange,
-  resetFilters,
-  applyFilters,
-  undoFilterChange,
-  redoFilterChange,
-  canUndo,
-  canRedo
-} = useAdvancedFilters({
-  initialFilterGroups,
-  persistKey: 'inventory-filters'
-});
-
-// Dans le JSX
-<div className="flex flex-col md:flex-row gap-4 items-start">
-  <div className="flex-1">
-    <SearchAndFilterBar
-      searchTerm={searchTerm}
-      onSearchChange={setSearchTerm}
-      sortOrder={sortOrder}
-      onSortToggle={toggleSortOrder}
-      sortLabel={{
-        asc: 'Date d\'expiration croissante',
-        desc: 'Date d\'expiration décroissante'
-      }}
-      searchPlaceholder="Rechercher un produit..."
-    />
-  </div>
-  <AdvancedFilters
-    filterGroups={filterGroups}
-    onFilterChange={handleFilterChange}
-    onResetFilters={resetFilters}
-    activeFiltersCount={activeFiltersCount}
-    onUndoFilterChange={undoFilterChange}
-    onRedoFilterChange={redoFilterChange}
-    canUndo={canUndo}
-    canRedo={canRedo}
-  />
-</div>
-```
-
-### Exemple 3 : Utilisation complète avec statistiques
-
-```tsx
-// Utilisation du hook useFilters avec toutes les fonctionnalités
-const {
-  filters,
-  searchTerm,
-  sortOrder,
-  sortedItems,
-  setSearchTerm,
-  updateFilter,
-  resetFilters,
-  toggleSortOrder,
-  filterStats,
-  undoFilterChange,
-  redoFilterChange,
-  canUndo,
-  canRedo
-} = useFilters<Product, ProductFilters>(
-  products,
-  {
-    initialFilters: { category: null, status: 'all' },
+export default function ShoppingListsPage({ lists }) {
+  const [activeTab, setActiveTab] = useState<FilterType>('all');
+  
+  const {
+    searchTerm,
+    sortOrder,
+    sortField,
+    filteredItems,
+    filterStats,
+    setSearchTerm,
+    toggleSortOrder,
+    changeSortField
+  } = useFilters(lists, {
+    initialFilters: { status: activeTab },
     initialSortOrder: 'desc',
-    initialSortField: 'createdAt',
-    searchFields: ['name', 'description'],
-    persistKey: 'product-filters',
-    debounceMs: 300
-  }
-);
-
-// Affichage des statistiques de filtrage
-<div className="text-sm text-muted-foreground">
-  {filterStats.filteredItemCount} sur {filterStats.totalItemCount} produits affichés
-  ({filterStats.filterReductionPercent}% filtrés)
-</div>
-```
-
-## Prochaines étapes
-
-Voici quelques pistes d'amélioration pour les futures versions :
-
-1. **Filtres contextuels** : Ajouter des filtres qui s'adaptent au contexte de l'application.
-2. **Filtres sauvegardés** : Permettre aux utilisateurs de sauvegarder leurs configurations de filtres préférées.
-3. **Filtres combinés** : Améliorer la gestion des filtres combinés (ET/OU) pour des recherches plus précises.
-4. **Filtres par plage** : Ajouter des filtres par plage pour les dates, les prix, etc.
-5. **Filtres géographiques** : Intégrer des filtres basés sur la localisation.
-6. **Recherche avancée** : Ajouter une syntaxe de recherche avancée avec des opérateurs booléens.
-7. **Filtres par tags** : Ajouter des filtres basés sur des tags ou des étiquettes.
-8. **Filtres par notation** : Ajouter des filtres basés sur les notations ou les avis.
-9. **Filtres par disponibilité** : Ajouter des filtres basés sur la disponibilité des produits.
-10. **Filtres par prix** : Ajouter des filtres basés sur les fourchettes de prix. 
+    initialSortField: 'updatedAt',
+    searchFields: ['title'],
+    persistKey: 'shopping-lists-filters',
+    filterFn: (item, filters, searchTerm) => {
+      // Filtrer par statut
+      if (filters.status === 'active' && item.completed) return false;
+      if (filters.status === 'completed' && !item.completed) return false;
+      if (filters.status === 'recent' && new Date(item.updatedAt).getTime() < Date.now() - 7 * 24 * 60 * 60 * 1000) return false;
+      
+      // Filtrer par terme de recherche
+      if (searchTerm && !item.title.toLowerCase().includes(searchTerm.toLowerCase())) return false;
+      
+      return true;
+    }
+  });
+  
+  const handleTabChange = (tabId: string) => {
+    setActiveTab(tabId as FilterType);
+    updateFilter('status', tabId);
+  };
+  
+  return (
+    <div>
+      <TabFilters
+        tabs={[
+          { id: 'all', label: 'Toutes', count: lists.length },
+          { id: 'active', label: 'En cours', count: lists.filter(list => !list.completed).length },
+          { id: 'completed', label: 'Terminées', count: lists.filter(list => list.completed).length },
+          { id: 'recent', label: 'Récentes', count: lists.filter(list => new Date(list.updatedAt).getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000).length }
+        ]}
+        activeTab={activeTab}
+        onTabChange={handleTabChange}
+        variant="pills"
+        showBadges
+      />
+      
+      <SearchAndFilterBar
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        sortOrder={sortOrder}
+        onSortToggle={toggleSortOrder}
+        sortField={sortField}
+        onSortFieldChange={changeSortField}
+        sortFields={[
+          { id: 'updatedAt', label: 'Date de modification' },
+          { id: 'title', label: 'Titre' },
+          { id: 'items.length', label: 'Nombre d\'articles' }
+        ]}
+        filterStats={filterStats}
+      />
+      
+      {/* Afficher les éléments filtrés */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
+        {filteredItems.map(list => (
+          <ShoppingListCard key={list.id} list={list} />
+        ))}
+      </div>
+    </div>
+  );
+} 

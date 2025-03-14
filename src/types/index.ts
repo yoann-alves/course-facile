@@ -110,9 +110,6 @@ export interface ToastContextType {
   showToast: (message: string, type: ToastType) => void;
 }
 
-// Types pour les filtres
+// Types pour les filtres simples
 export type FilterType = 'all' | 'active' | 'completed' | 'recent';
-export type SortType = 'date' | 'name' | 'count';
-export type CategoryFilterType = string | null;
-export type LocationFilterType = string | null;
-export type ExpirationFilterType = 'all' | 'expired' | 'expiring-soon' | 'valid'; 
+export type SortType = 'date' | 'name' | 'count'; 

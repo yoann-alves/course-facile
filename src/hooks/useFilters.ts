@@ -8,8 +8,8 @@ interface UseFiltersOptions<T, F extends Record<string, unknown>> {
   filterFn?: (item: T, filters: F, searchTerm: string) => boolean;
   searchFields?: Array<keyof T>;
   persistKey?: string;
-  debounceMs?: number; // Délai de debounce pour la recherche
-  defaultComparator?: <K extends keyof T>(a: T[K], b: T[K], order: 'asc' | 'desc') => number; // Comparateur personnalisé
+  debounceMs?: number;
+  defaultComparator?: <K extends keyof T>(a: T[K], b: T[K], order: 'asc' | 'desc') => number;
 }
 
 /**
@@ -46,8 +46,6 @@ export function useFilters<T, F extends Record<string, unknown>>(
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(initialSortOrder);
   const [sortField, setSortField] = useState<keyof T | undefined>(initialSortField);
-  const [filterHistory, setFilterHistory] = useState<F[]>([savedFilters]); // Historique des filtres pour undo/redo
-  const [historyIndex, setHistoryIndex] = useState(0);
 
   // Effet pour le debounce de la recherche
   useEffect(() => {
@@ -60,199 +58,112 @@ export function useFilters<T, F extends Record<string, unknown>>(
     };
   }, [searchTerm, debounceMs]);
 
+  // Effet pour sauvegarder les filtres si persistKey est fourni
+  useEffect(() => {
+    if (persistKey && isClient) {
+      setToLocalStorage(persistKey, filters);
+    }
+  }, [filters, persistKey]);
+
   // Fonction pour mettre à jour un filtre
-  const updateFilter = useCallback(<K extends keyof F>(key: K, value: F[K]) => {
-    setFilters(prev => {
-      const newFilters = { ...prev, [key]: value };
-      
-      // Persister les filtres si persistKey est fourni
-      if (persistKey && isClient) {
-        setToLocalStorage(persistKey, newFilters);
-      }
-      
-      // Ajouter à l'historique des filtres
-      setFilterHistory(history => {
-        const newHistory = [...history.slice(0, historyIndex + 1), newFilters];
-        // Limiter la taille de l'historique à 10 entrées
-        if (newHistory.length > 10) {
-          newHistory.shift();
-        }
-        setHistoryIndex(newHistory.length - 1);
-        return newHistory;
-      });
-      
-      return newFilters;
-    });
-  }, [persistKey, historyIndex]);
-  
+  const updateFilter = useCallback((key: keyof F, value: F[keyof F]) => {
+    setFilters(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  }, []);
+
   // Fonction pour réinitialiser les filtres
   const resetFilters = useCallback(() => {
     setFilters(initialFilters);
     setSearchTerm('');
-    
-    // Persister les filtres si persistKey est fourni
-    if (persistKey && isClient) {
-      setToLocalStorage(persistKey, initialFilters);
-    }
-    
-    // Réinitialiser l'historique
-    setFilterHistory([initialFilters]);
-    setHistoryIndex(0);
-  }, [initialFilters, persistKey]);
-  
-  // Fonction pour inverser l'ordre de tri
+  }, [initialFilters]);
+
+  // Fonction pour basculer l'ordre de tri
   const toggleSortOrder = useCallback(() => {
-    setSortOrder(prev => (prev === 'asc' ? 'desc' : 'asc'));
+    setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
   }, []);
-  
+
   // Fonction pour changer le champ de tri
   const changeSortField = useCallback((field: keyof T) => {
     setSortField(field);
   }, []);
-  
-  // Fonction pour annuler la dernière modification de filtre
-  const undoFilterChange = useCallback(() => {
-    if (historyIndex > 0) {
-      const newIndex = historyIndex - 1;
-      setHistoryIndex(newIndex);
-      const previousFilters = filterHistory[newIndex];
-      setFilters(previousFilters);
-      
-      if (persistKey && isClient) {
-        setToLocalStorage(persistKey, previousFilters);
-      }
-    }
-  }, [filterHistory, historyIndex, persistKey]);
-  
-  // Fonction pour rétablir la dernière modification de filtre annulée
-  const redoFilterChange = useCallback(() => {
-    if (historyIndex < filterHistory.length - 1) {
-      const newIndex = historyIndex + 1;
-      setHistoryIndex(newIndex);
-      const nextFilters = filterHistory[newIndex];
-      setFilters(nextFilters);
-      
-      if (persistKey && isClient) {
-        setToLocalStorage(persistKey, nextFilters);
-      }
-    }
-  }, [filterHistory, historyIndex, persistKey]);
 
-  // Filtrer les éléments
-  const filteredItems = useMemo(() => {
-    // Si une fonction de filtre personnalisée est fournie, l'utiliser
+  // Fonction pour filtrer les éléments
+  const filterItems = useCallback((itemsToFilter: T[]): T[] => {
+    // Filtrer par terme de recherche et filtres
+    let filteredItems = itemsToFilter;
+    
     if (filterFn) {
-      return items.filter(item => filterFn(item, filters, debouncedSearchTerm));
+      filteredItems = filteredItems.filter(item => filterFn(item, filters, debouncedSearchTerm));
+    } else if (debouncedSearchTerm && searchFields.length > 0) {
+      // Filtrage par défaut si filterFn n'est pas fourni
+      const normalizedSearchTerm = debouncedSearchTerm.toLowerCase();
+      filteredItems = filteredItems.filter(item => {
+        return searchFields.some(field => {
+          const value = item[field];
+          if (value === null || value === undefined) return false;
+          return String(value).toLowerCase().includes(normalizedSearchTerm);
+        });
+      });
     }
-
-    // Sinon, utiliser une logique de filtre par défaut
-    return items.filter(item => {
-      // Vérifier si l'élément correspond aux filtres
-      const matchesFilters = Object.entries(filters).every(([key, value]) => {
-        // Si la valeur du filtre est vide ou null, ne pas filtrer sur ce champ
-        if (value === '' || value === null || value === undefined) return true;
-        
-        // Si la valeur du filtre est un tableau, vérifier si la valeur de l'élément est dans le tableau
-        if (Array.isArray(value)) {
-          return value.includes(item[key as keyof T]);
+    
+    // Trier les éléments
+    if (sortField) {
+      filteredItems = [...filteredItems].sort((a, b) => {
+        if (defaultComparator) {
+          return defaultComparator(a[sortField], b[sortField], sortOrder);
         }
         
-        // Sinon, vérifier si la valeur de l'élément correspond à la valeur du filtre
-        return item[key as keyof T] === value;
-      });
-
-      // Si aucun terme de recherche, retourner le résultat des filtres
-      if (!debouncedSearchTerm.trim()) return matchesFilters;
-
-      // Vérifier si l'élément correspond au terme de recherche
-      const matchesSearch = searchFields.some(field => {
-        const fieldValue = item[field];
-        if (fieldValue === undefined || fieldValue === null) return false;
+        const aValue = a[sortField];
+        const bValue = b[sortField];
         
-        return String(fieldValue).toLowerCase().includes(debouncedSearchTerm.toLowerCase());
+        if (aValue === bValue) return 0;
+        
+        // Tri par défaut
+        const comparison = aValue < bValue ? -1 : 1;
+        return sortOrder === 'asc' ? comparison : -comparison;
       });
+    }
+    
+    return filteredItems;
+  }, [filters, debouncedSearchTerm, sortField, sortOrder, filterFn, searchFields, defaultComparator]);
 
-      return matchesFilters && matchesSearch;
-    });
-  }, [items, filters, debouncedSearchTerm, filterFn, searchFields]);
-
-  // Trier les éléments filtrés
-  const sortedItems = useMemo(() => {
-    if (!sortField) return filteredItems;
-
-    return [...filteredItems].sort((a, b) => {
-      const valueA = a[sortField];
-      const valueB = b[sortField];
-
-      // Utiliser le comparateur personnalisé s'il est fourni
-      if (defaultComparator) {
-        return defaultComparator(valueA, valueB, sortOrder);
-      }
-
-      // Gérer les cas où les valeurs sont des dates
-      if (
-        valueA instanceof Date && 
-        valueB instanceof Date
-      ) {
-        return sortOrder === 'asc'
-          ? valueA.getTime() - valueB.getTime()
-          : valueB.getTime() - valueA.getTime();
-      }
-
-      // Gérer les cas où les valeurs sont des chaînes de caractères
-      if (typeof valueA === 'string' && typeof valueB === 'string') {
-        return sortOrder === 'asc'
-          ? valueA.localeCompare(valueB)
-          : valueB.localeCompare(valueA);
-      }
-
-      // Gérer les cas où les valeurs sont des nombres
-      if (typeof valueA === 'number' && typeof valueB === 'number') {
-        return sortOrder === 'asc' ? valueA - valueB : valueB - valueA;
-      }
-
-      // Gérer les autres cas
-      return 0;
-    });
-  }, [filteredItems, sortField, sortOrder, defaultComparator]);
+  // Appliquer les filtres aux éléments
+  const filteredItems = useMemo(() => {
+    return filterItems(items);
+  }, [items, filterItems]);
 
   // Statistiques sur les filtres
   const filterStats = useMemo(() => {
-    const activeFilterCount = Object.values(filters).filter(
-      value => value !== null && value !== undefined && value !== '' && 
-      !(Array.isArray(value) && value.length === 0)
-    ).length;
-    
-    const hasActiveSearch = debouncedSearchTerm.trim() !== '';
+    const totalItemCount = items.length;
+    const filteredItemCount = filteredItems.length;
+    const filterReductionPercent = totalItemCount > 0
+      ? Math.round(((totalItemCount - filteredItemCount) / totalItemCount) * 100)
+      : 0;
     
     return {
-      activeFilterCount,
-      hasActiveSearch,
-      totalActiveFilters: activeFilterCount + (hasActiveSearch ? 1 : 0),
-      filteredItemCount: filteredItems.length,
-      totalItemCount: items.length,
-      filterReductionPercent: items.length > 0 
-        ? Math.round((1 - filteredItems.length / items.length) * 100) 
-        : 0
+      totalItemCount,
+      filteredItemCount,
+      filterReductionPercent
     };
-  }, [filters, debouncedSearchTerm, filteredItems.length, items.length]);
+  }, [items.length, filteredItems.length]);
 
   return {
+    // État
     filters,
     searchTerm,
+    debouncedSearchTerm,
     sortOrder,
     sortField,
     filteredItems,
-    sortedItems,
+    filterStats,
+    
+    // Actions
     setSearchTerm,
     updateFilter,
     resetFilters,
     toggleSortOrder,
-    changeSortField,
-    undoFilterChange,
-    redoFilterChange,
-    canUndo: historyIndex > 0,
-    canRedo: historyIndex < filterHistory.length - 1,
-    filterStats
+    changeSortField
   };
 } 
