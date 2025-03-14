@@ -1,9 +1,8 @@
-import React, { useState, useContext, useRef, useEffect } from 'react';
+import React, { useState, useContext, useRef, useEffect, memo } from 'react';
 import Link from 'next/link';
 import { ShoppingCart, Trash2, Package, MoreVertical, Share2 } from 'lucide-react';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-// @ts-expect-error - Le module framer-motion est installé mais les types ne sont pas disponibles
 import { motion } from 'framer-motion';
 import {
   Dialog,
@@ -14,9 +13,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-// @ts-expect-error - Le module Label est créé mais le linter ne le reconnaît pas encore
 import { Label } from "@/components/ui/label";
 import { ToastContext } from '@/components/ui/toast';
+import { useFormatDate } from '@/hooks/useFormatDate';
+import { useModals } from '@/hooks/useModals';
 
 interface ShoppingListCardProps {
   id: string;
@@ -27,7 +27,7 @@ interface ShoppingListCardProps {
   onDelete: (id: string) => void;
 }
 
-export default function ShoppingListCard({ 
+const ShoppingListCard = memo(function ShoppingListCard({ 
   id, 
   title, 
   itemCount, 
@@ -37,11 +37,13 @@ export default function ShoppingListCard({
 }: ShoppingListCardProps) {
   const progress = itemCount > 0 ? (completedCount / itemCount) * 100 : 0;
   const [showActions, setShowActions] = useState(false);
-  const [showShareDialog, setShowShareDialog] = useState(false);
-  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [shareEmail, setShareEmail] = useState('');
   const { showToast } = useContext(ToastContext);
+  const dateFormatter = useFormatDate();
   const cardRef = useRef<HTMLDivElement>(null);
+  
+  // Utiliser useModals pour gérer les modales
+  const { isOpen, openModal, closeModal } = useModals();
 
   // Fermer le menu contextuel lorsque la souris quitte la carte
   useEffect(() => {
@@ -76,10 +78,9 @@ export default function ShoppingListCard({
     
     // Simuler un délai de traitement
     setTimeout(() => {
-      console.log(`Partage de la liste ${id} avec ${shareEmail}`);
       showToast(`Liste "${title}" partagée avec ${shareEmail}`, 'success');
       setShareEmail('');
-      setShowShareDialog(false);
+      closeModal('share');
       // Dans une vraie application, nous enverrions une invitation de partage ici
     }, 1000);
   };
@@ -90,10 +91,9 @@ export default function ShoppingListCard({
     
     // Simuler un délai de traitement
     setTimeout(() => {
-      console.log(`Suppression de la liste ${id}`);
       onDelete(id);
       showToast(`Liste "${title}" supprimée avec succès`, 'success');
-      setShowDeleteDialog(false);
+      closeModal('delete');
     }, 1000);
   };
 
@@ -125,7 +125,7 @@ export default function ShoppingListCard({
                     {title}
                   </CardTitle>
                   <CardDescription>
-                    Créée le {new Date(createdAt).toLocaleDateString('fr-FR')}
+                    Créée le {dateFormatter.format(createdAt)}
                   </CardDescription>
                 </div>
               </div>
@@ -174,7 +174,7 @@ export default function ShoppingListCard({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                setShowShareDialog(true);
+                openModal('share');
                 setShowActions(false);
               }}
             >
@@ -186,7 +186,7 @@ export default function ShoppingListCard({
               onClick={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                setShowDeleteDialog(true);
+                openModal('delete');
                 setShowActions(false);
               }}
             >
@@ -198,7 +198,7 @@ export default function ShoppingListCard({
       </div>
 
       {/* Dialog de partage */}
-      <Dialog open={showShareDialog} onOpenChange={setShowShareDialog}>
+      <Dialog open={isOpen('share')} onOpenChange={(open) => open ? openModal('share') : closeModal('share')}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Partager la liste</DialogTitle>
@@ -222,7 +222,7 @@ export default function ShoppingListCard({
             </div>
           </div>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setShowShareDialog(false)}>
+            <Button type="button" variant="outline" onClick={() => closeModal('share')}>
               Annuler
             </Button>
             <Button 
@@ -237,7 +237,7 @@ export default function ShoppingListCard({
       </Dialog>
 
       {/* Dialog de confirmation de suppression */}
-      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+      <Dialog open={isOpen('delete')} onOpenChange={(open) => open ? openModal('delete') : closeModal('delete')}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Confirmer la suppression</DialogTitle>
@@ -246,10 +246,15 @@ export default function ShoppingListCard({
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => setShowDeleteDialog(false)}>
+            <Button type="button" variant="outline" onClick={() => closeModal('delete')}>
               Annuler
             </Button>
-            <Button type="button" variant="secondary" className="bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700" onClick={handleDelete}>
+            <Button 
+              type="button" 
+              variant="default"
+              className="bg-red-500 hover:bg-red-600 text-white"
+              onClick={handleDelete}
+            >
               Supprimer
             </Button>
           </DialogFooter>
@@ -257,4 +262,6 @@ export default function ShoppingListCard({
       </Dialog>
     </motion.div>
   );
-} 
+});
+
+export default ShoppingListCard; 

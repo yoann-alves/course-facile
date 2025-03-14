@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import { shoppingLists as initialShoppingLists } from '@/data/shopping-lists';
 import { ShoppingList, ShoppingListContextType } from '@/types';
 import { isClient, getFromLocalStorage, setToLocalStorage, generateId } from '@/lib/utils';
@@ -12,6 +12,15 @@ export const ShoppingListContext = createContext<ShoppingListContextType>({
   deleteList: () => {},
   getList: () => undefined,
 });
+
+// Hook pour utiliser le contexte de liste de courses
+export function useShoppingLists() {
+  const context = useContext(ShoppingListContext);
+  if (!context) {
+    throw new Error('useShoppingLists doit être utilisé à l\'intérieur d\'un ShoppingListProvider');
+  }
+  return context;
+}
 
 export function ShoppingListProvider({ children }: { children: React.ReactNode }) {
   // Utiliser localStorage pour persister les listes entre les sessions
@@ -31,7 +40,6 @@ export function ShoppingListProvider({ children }: { children: React.ReactNode }
   useEffect(() => {
     if (isInitialized && isClient) {
       setToLocalStorage('shoppingLists', lists);
-      console.log('Listes sauvegardées:', lists);
     }
   }, [lists, isInitialized]);
   
@@ -47,7 +55,6 @@ export function ShoppingListProvider({ children }: { children: React.ReactNode }
     };
     
     setLists(prevLists => [...prevLists, newList]);
-    console.log('Liste ajoutée:', newList);
     return newId;
   };
   
@@ -59,7 +66,6 @@ export function ShoppingListProvider({ children }: { children: React.ReactNode }
           ? { ...updatedList, updatedAt: new Date().toISOString() } 
           : list
       );
-      console.log('Liste mise à jour:', updatedList.id, newLists);
       return newLists;
     });
   };
@@ -68,7 +74,6 @@ export function ShoppingListProvider({ children }: { children: React.ReactNode }
   const deleteList = (id: string) => {
     setLists(prevLists => {
       const newLists = prevLists.filter(list => list.id !== id);
-      console.log('Liste supprimée:', id, newLists);
       return newLists;
     });
   };

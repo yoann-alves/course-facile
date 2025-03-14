@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import Link from 'next/link';
 import { 
   Plus, 
@@ -10,23 +10,22 @@ import {
   Package
 } from 'lucide-react';
 import MainLayout from '@/components/layout/MainLayout';
-import ShoppingListCard from '@/components/ShoppingListCard';
-import { Card } from '@/components/ui/card';
+import ShoppingListCard from '@/components/cards/ShoppingListCard';
+import QuickActionCard from '@/components/dashboard/QuickActionCard';
 import { getCompletedItemCount } from '@/data/shopping-lists';
-import { useShoppingList } from '@/hooks/useShoppingList';
+import { useShoppingLists } from '@/contexts/ShoppingListContext';
 import { Button } from '@/components/ui/button';
 
 export default function DashboardPage() {
-  const { lists, deleteList } = useShoppingList();
+  const { lists, deleteList } = useShoppingLists();
   
   // Gérer la suppression d'une liste
   const handleDeleteList = (id: string) => {
-    console.log('Suppression de la liste depuis le dashboard:', id);
     deleteList(id);
   };
   
   // Définir les raccourcis rapides
-  const quickActions = [
+  const quickActions = useMemo(() => [
     {
       id: 'new-list',
       title: 'Nouvelle liste',
@@ -72,7 +71,7 @@ export default function DashboardPage() {
       iconColor: 'text-gray-600',
       href: '/settings'
     }
-  ];
+  ], []);
 
   return (
     <MainLayout>
@@ -91,17 +90,16 @@ export default function DashboardPage() {
           {/* Raccourcis rapides */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {quickActions.map((action) => (
-              <Link key={action.id} href={action.href} className="block">
-                <Card className="hover:shadow-md transition-shadow border-transparent hover:border-gray-200">
-                  <div className="p-4 flex flex-col items-center text-center">
-                    <div className={`${action.bgColor} p-3 rounded-full mb-3`}>
-                      {React.createElement(action.icon, { className: `w-6 h-6 ${action.iconColor}` })}
-                    </div>
-                    <h3 className="font-medium text-gray-800 dark:text-gray-200">{action.title}</h3>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{action.description}</p>
-                  </div>
-                </Card>
-              </Link>
+              <QuickActionCard
+                key={action.id}
+                id={action.id}
+                title={action.title}
+                description={action.description}
+                icon={action.icon}
+                bgColor={action.bgColor}
+                iconColor={action.iconColor}
+                href={action.href}
+              />
             ))}
           </div>
 

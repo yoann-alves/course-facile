@@ -1,4 +1,4 @@
-# Résumé des améliorations - 15/03/2024
+# Résumé des améliorations - 13/03/2025
 
 ## Amélioration du processus de création de liste
 

@@ -1,6 +1,6 @@
 # Product Requirements Document (PRD) - Course Facile
 
-*Date de dernière mise à jour: 13/03/2024*
+*Date de dernière mise à jour: 13/03/2025*
 
 ## 1. Elevator Pitch
 Course Facile est une application web conçue pour aider les utilisateurs à gérer leurs courses de manière efficace et collaborative. Elle permet de créer des listes de courses, de suivre les dates de péremption des aliments, et d'éviter le gaspillage tout en économisant de l'argent. Grâce à une interface intuitive et moderne, les utilisateurs peuvent facilement partager des listes avec leur famille et recevoir des notifications personnalisées.

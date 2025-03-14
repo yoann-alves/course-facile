@@ -1,6 +1,6 @@
 # Document de Rétro-ingénierie - Course Facile
 
-*Date de dernière mise à jour: 15/03/2024*
+*Date de dernière mise à jour: 10/07/2024*
 
 ## Structure du Projet
 
@@ -12,6 +12,8 @@ Le projet Course Facile est une application web développée avec Next.js qui pe
 - `/src/components` : Contient les composants réutilisables
 - `/src/data` : Contient les données factices pour le prototypage
 - `/src/lib` : Contient les utilitaires et fonctions d'aide
+- `/src/hooks` : Contient les hooks personnalisés
+- `/src/contexts` : Contient les contextes React
 
 ### Routes Principales
 
@@ -19,7 +21,7 @@ Le projet Course Facile est une application web développée avec Next.js qui pe
 - `/lists` : Affichage de toutes les listes de courses
 - `/lists/[id]` : Détails d'une liste de courses spécifique
 - `/create-list` : Création d'une nouvelle liste
-- `/manage-expirations` : Gestion des dates de péremption
+- `/inventory` : Gestion des stocks et dates de péremption
 - `/products/[id]` : Détails d'un produit spécifique avec ses instances
 - `/settings` : Paramètres de l'application
 
@@ -33,8 +35,8 @@ Le projet Course Facile est une application web développée avec Next.js qui pe
    - Responsive avec un comportement différent sur mobile et desktop
    - Navigation vers les routes principales de l'application
 
-2. **Sidebar.tsx**
-   - Composant de barre latérale alternative
+2. **Navigation.tsx**
+   - Composant de barre latérale
    - Peut être réduit/étendu
    - Contient des liens vers toutes les routes principales
 
@@ -44,6 +46,46 @@ Le projet Course Facile est une application web développée avec Next.js qui pe
 - Système de toast pour les notifications
 - Cartes pour afficher les listes et les produits
 - Barres de progression pour le suivi des listes
+
+### Composants de Filtres et Recherche
+
+1. **SearchAndFilterBar** (`src/components/filters/SearchAndFilterBar.tsx`)
+   - Barre de recherche avec option de tri
+   - Permet aux utilisateurs de rechercher des éléments et de changer l'ordre de tri
+   - Utilisé dans les pages de listes et d'inventaire
+
+2. **TabFilters** (`src/components/filters/TabFilters.tsx`)
+   - Filtres par onglets avec compteurs
+   - Permet aux utilisateurs de filtrer les données par catégories principales
+   - Affiche le nombre d'éléments dans chaque catégorie
+   - Utilisé dans la page de listes pour filtrer par statut (Toutes, En cours, Terminées)
+
+3. **AdvancedFilters** (`src/components/filters/AdvancedFilters.tsx`)
+   - Filtres avancés avec options multiples
+   - Permet aux utilisateurs d'appliquer des filtres plus complexes
+   - Affiche le nombre de filtres actifs
+   - Utilisé dans la page d'inventaire pour filtrer par catégories, emplacements et statut
+
+### Hooks personnalisés
+
+1. **useFilters** (`src/hooks/useFilters.ts`)
+   - Hook général pour gérer les filtres, la recherche et le tri
+   - Fournit des fonctions pour mettre à jour les filtres, réinitialiser les filtres, changer l'ordre de tri, etc.
+   - Permet de persister les filtres dans le localStorage
+
+2. **useAdvancedFilters** (`src/hooks/useAdvancedFilters.ts`)
+   - Hook spécifique pour gérer les filtres avancés
+   - Gère des groupes de filtres avec des options multiples
+   - Calcule le nombre de filtres actifs
+   - Permet de persister les filtres dans le localStorage
+
+3. **useFormatDate** (`src/hooks/useFormatDate.ts`)
+   - Hook pour formater les dates de manière cohérente
+   - Utilise la locale française pour l'affichage des dates
+
+4. **useModals** (`src/hooks/useModals.ts`)
+   - Hook pour gérer l'état des modales dans l'application
+   - Permet d'ouvrir et fermer des modales identifiées par un ID
 
 ## Fonctionnalités Découvertes
 
@@ -60,21 +102,23 @@ Le projet Course Facile est une application web développée avec Next.js qui pe
 - Duplication de listes existantes
 - Recherche et ajout rapide de produits lors de la création
 
-### Gestion des Produits
+### Gestion des Produits et Inventaire
 
 - Affichage détaillé d'un produit avec ses informations (catégorie, description, prix, infos nutritionnelles)
 - Gestion des instances d'un produit avec leurs dates de péremption
 - Ajout de nouvelles instances d'un produit
 - Alertes visuelles pour les produits périmés ou bientôt périmés
+- Filtrage avancé des produits par catégorie, emplacement et statut
+- Recherche de produits par nom
 
-### Gestion des Dates de Péremption
+### Filtrage et Recherche
 
-- Vue d'ensemble des produits avec leurs dates de péremption
-- Filtrage des produits par état (périmés, bientôt périmés, autres)
-- Liens directs vers les détails des produits
-- Utilisation du format de date français (fr-FR) pour l'affichage des dates
-- Fonction utilitaire `formatDate()` pour assurer un formatage cohérent des dates
-- Nécessité de spécifier explicitement la locale pour éviter les erreurs d'hydratation entre le serveur et le client
+- Système de filtrage cohérent à travers l'application
+- Recherche textuelle dans les listes et les produits
+- Filtres par onglets pour les catégories principales
+- Filtres avancés pour des critères plus spécifiques
+- Tri des résultats par différents critères
+- Persistance des filtres dans le localStorage
 
 ### Navigation
 
@@ -148,20 +192,28 @@ Le projet Course Facile est une application web développée avec Next.js qui pe
 - opened?: boolean
 - notes?: string
 
-### ExpirationItem
-- id: string
-- name: string
-- quantity: number
-- unit: string
-- category: string
-- expirationDate: string
-- purchaseDate: string
+## Dépendances
+
+Les composants de filtres utilisent les composants UI de shadcn/ui :
+- Button
+- Input
+- Checkbox
+- Label
+- Popover
+- Separator
 
 ## État du Projet
 
 Le projet est actuellement en mode prototypage, avec une concentration sur le développement frontend. Les données sont simulées à l'aide de JSON statiques, sans connexion à un backend.
 
 ## Modifications Récentes
+
+### 10/07/2024 - Ajout des composants de filtres et recherche
+- Création de composants réutilisables pour les filtres et la recherche
+- Implémentation de hooks personnalisés pour gérer les filtres
+- Intégration des composants dans les pages de listes et d'inventaire
+- Amélioration de l'expérience utilisateur avec des filtres cohérents
+- Documentation complète des composants et hooks
 
 ### 15/03/2024 - Amélioration du processus de création de liste
 - Implémentation d'une modale de création rapide de liste accessible depuis la page "Toutes les listes"
@@ -206,11 +258,39 @@ Le projet est actuellement en mode prototypage, avec une concentration sur le d�
   - Résolution du problème de rendu différent entre le serveur et le client
 - Ajout d'un lien vers la route `/lists` dans la sidebar du composant MainLayout.tsx
 
-## Notes Techniques
+## Améliorations futures possibles
 
-- L'application utilise Tailwind CSS pour le styling
-- Le projet est en mode développement frontend uniquement (prototypage)
-- Les données sont simulées avec des fichiers JSON statiques
-- Attention particulière à porter sur la cohérence du formatage des dates entre le serveur et le client pour éviter les erreurs d'hydratation
-- Pour les pages dynamiques dans les composants clients, nous utilisons le hook `useParams()` de Next.js pour accéder aux paramètres de route, évitant ainsi les avertissements liés à l'accès direct à `params.id` et les erreurs liées à l'utilisation de `React.use()` dans un contexte client.
-- Les IDs des nouvelles entités sont générés de manière aléatoire pour éviter les collisions 
+1. Ajouter la possibilité de sauvegarder des configurations de filtres personnalisées
+2. Implémenter un historique des recherches récentes
+3. Ajouter des filtres par plage de dates
+4. Améliorer l'accessibilité des composants de filtres
+5. Ajouter des animations pour améliorer l'expérience utilisateur
+6. Implémenter un système de filtres combinés (ET/OU) pour des recherches plus précises
+7. Ajouter un système de suggestions de recherche basé sur les recherches précédentes
+8. Créer un composant de visualisation des filtres actifs avec possibilité de les supprimer individuellement
+9. Optimiser les performances de filtrage pour les grandes listes de données
+10. Ajouter des raccourcis clavier pour les actions de filtrage courantes
+11. Implémenter un système de filtres favoris que l'utilisateur peut enregistrer
+12. Ajouter des statistiques sur les résultats de filtrage (nombre d'éléments, répartition par catégorie, etc.)
+13. Créer un système d'export des données filtrées (CSV, PDF)
+14. Améliorer la réactivité des composants de filtres sur les appareils mobiles
+15. Ajouter des tests unitaires et d'intégration pour les composants de filtres
+16. Implémenter un système de filtres contextuels qui s'adaptent au contenu affiché
+17. Ajouter un mode de recherche avancée avec opérateurs booléens (AND, OR, NOT)
+18. Créer un composant de filtres par tags pour les éléments avec des étiquettes multiples
+19. Implémenter un système de filtres géographiques pour les emplacements (distance, région, etc.)
+20. Ajouter des filtres de prix avec des plages personnalisables
+21. Créer un système de filtres par notation ou popularité
+22. Implémenter un système de filtres par statut de disponibilité (en stock, épuisé, etc.)
+23. Ajouter des filtres saisonniers pour les produits (été, hiver, etc.)
+24. Créer un système de filtres par fréquence d'achat (régulier, occasionnel, etc.)
+25. Implémenter un système de filtres par préférences alimentaires (végétarien, sans gluten, etc.)
+26. Ajouter des filtres par marque ou fabricant
+27. Créer un système de filtres par promotion ou réduction
+28. Implémenter un système de filtres par date d'ajout au système
+29. Ajouter des filtres par niveau de priorité ou importance
+30. Créer un système de filtres par mode de conservation (réfrigéré, congelé, température ambiante)
+
+## Documentation
+
+Une documentation complète sur l'utilisation de ces composants est disponible dans `.documentation/composants-filtres.md`. 

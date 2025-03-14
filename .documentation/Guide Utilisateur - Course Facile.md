@@ -1,6 +1,6 @@
 # Guide Utilisateur - Course Facile
 
-*Date de dernière mise à jour: 13/03/2024*
+*Date de dernière mise à jour: 13/03/2025*
 
 ## Introduction
 

@@ -1,84 +1,162 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import Link from 'next/link';
-import { Plus, AlertTriangle, Trash2, Search, Package, RefreshCw, Calendar, MapPin, MoreVertical } from 'lucide-react';
+import { Plus, Package, RefreshCw, Calendar, MapPin, MoreVertical } from 'lucide-react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { products, productInstances, isExpired, daysUntilExpiration, getProductDetails } from '@/data/products';
 import { cn } from '@/lib/utils';
+import { useFormatDate } from '@/hooks/useFormatDate';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import SearchAndFilterBar from '@/components/filters/SearchAndFilterBar';
+import AdvancedFilters, { FilterGroup } from '@/components/filters/AdvancedFilters';
+import { useAdvancedFilters } from '@/hooks/useAdvancedFilters';
 
 export default function InventoryPage() {
-  // États pour la recherche et le filtrage
+  // États pour la recherche et le tri
   const [searchTerm, setSearchTerm] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState<string>('');
-  const [locationFilter, setLocationFilter] = useState<string>('');
-  const [showExpiredOnly, setShowExpiredOnly] = useState(false);
-  const [showExpiringSoonOnly, setShowExpiringSoonOnly] = useState(false);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [showAddProductForm, setShowAddProductForm] = useState(false);
+  
+  // Utiliser le hook de formatage des dates
+  const dateFormatter = useFormatDate();
 
   // Récupérer toutes les catégories uniques
-  const allCategories = Array.from(new Set(products.map(p => p.category)));
+  const allCategories = useMemo(() => 
+    Array.from(new Set(products.map(p => p.category))),
+    []
+  );
   
   // Récupérer tous les emplacements uniques
-  const allLocations = Array.from(new Set(productInstances
-    .filter(pi => pi.location)
-    .map(pi => pi.location as string)
-  ));
+  const allLocations = useMemo(() => 
+    Array.from(new Set(productInstances
+      .filter(pi => pi.location)
+      .map(pi => pi.location as string)
+    )),
+    []
+  );
 
-  // Filtrer les instances de produits
-  const filteredInstances = productInstances.filter(instance => {
+  // Configurer les filtres avancés
+  const initialFilterGroups: FilterGroup[] = useMemo(() => [
+    {
+      id: 'categories',
+      label: 'Catégories',
+      options: allCategories.map(category => ({
+        id: category,
+        label: category,
+        checked: false
+      }))
+    },
+    {
+      id: 'locations',
+      label: 'Emplacements',
+      options: allLocations.map(location => ({
+        id: location,
+        label: location,
+        checked: false
+      }))
+    },
+    {
+      id: 'status',
+      label: 'Statut',
+      options: [
+        { id: 'expired', label: 'Périmés', checked: false },
+        { id: 'expiringSoon', label: 'Périmant bientôt', checked: false }
+      ]
+    }
+  ], [allCategories, allLocations]);
+
+  // Utiliser le hook de filtres avancés
+  const {
+    filterGroups,
+    activeFiltersCount,
+    handleFilterChange,
+    resetFilters,
+    applyFilters
+  } = useAdvancedFilters({
+    initialFilterGroups,
+    persistKey: 'inventory-filters'
+  });
+
+  // Fonction pour filtrer les produits en fonction des filtres avancés
+  const filterProductsByAdvancedFilters = useCallback((instance: any, groups: FilterGroup[]) => {
     const product = getProductDetails(instance);
     if (!product) return false;
 
-    // Filtre de recherche
-    if (searchTerm && !product.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+    // Vérifier les filtres de catégorie
+    const categoryGroup = groups.find(g => g.id === 'categories');
+    const selectedCategories = categoryGroup?.options.filter(o => o.checked).map(o => o.id);
+    if (selectedCategories && selectedCategories.length > 0 && !selectedCategories.includes(product.category)) {
       return false;
     }
 
-    // Filtre par catégorie
-    if (categoryFilter && product.category !== categoryFilter) {
+    // Vérifier les filtres d'emplacement
+    const locationGroup = groups.find(g => g.id === 'locations');
+    const selectedLocations = locationGroup?.options.filter(o => o.checked).map(o => o.id);
+    if (selectedLocations && selectedLocations.length > 0 && !selectedLocations.includes(instance.location)) {
       return false;
     }
 
-    // Filtre par emplacement
-    if (locationFilter && instance.location !== locationFilter) {
+    // Vérifier les filtres de statut
+    const statusGroup = groups.find(g => g.id === 'status');
+    const showExpired = statusGroup?.options.find(o => o.id === 'expired')?.checked;
+    const showExpiringSoon = statusGroup?.options.find(o => o.id === 'expiringSoon')?.checked;
+
+    if (showExpired && !isExpired(instance)) {
       return false;
     }
 
-    // Filtre pour les produits périmés
-    if (showExpiredOnly && !isExpired(instance)) {
-      return false;
-    }
-
-    // Filtre pour les produits qui expirent bientôt (dans les 7 jours)
-    if (showExpiringSoonOnly && (!instance.expirationDate || daysUntilExpiration(instance) > 7 || isExpired(instance))) {
+    if (showExpiringSoon && (!instance.expirationDate || daysUntilExpiration(instance) > 7 || isExpired(instance))) {
       return false;
     }
 
     return true;
-  });
+  }, []);
 
-  // Trier les instances par date d'expiration (les plus proches en premier)
-  const sortedInstances = [...filteredInstances].sort((a, b) => {
-    // Si un produit n'a pas de date d'expiration, le mettre à la fin
-    if (!a.expirationDate) return 1;
-    if (!b.expirationDate) return -1;
+  // Filtrer les instances de produits
+  const filteredInstances = useMemo(() => {
+    // Appliquer d'abord les filtres avancés
+    const advancedFiltered = applyFilters(productInstances, filterProductsByAdvancedFilters);
     
-    return new Date(a.expirationDate).getTime() - new Date(b.expirationDate).getTime();
-  });
+    // Puis appliquer le filtre de recherche
+    return advancedFiltered.filter(instance => {
+      const product = getProductDetails(instance);
+      if (!product) return false;
+      
+      // Filtre de recherche
+      if (searchTerm && !product.name.toLowerCase().includes(searchTerm.toLowerCase())) {
+        return false;
+      }
+      
+      return true;
+    });
+  }, [applyFilters, filterProductsByAdvancedFilters, searchTerm]);
 
-  // Fonction pour formater la date
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('fr-FR');
-  };
+  // Trier les instances par date d'expiration
+  const sortedInstances = useMemo(() => {
+    return [...filteredInstances].sort((a, b) => {
+      // Si un produit n'a pas de date d'expiration, le mettre à la fin
+      if (!a.expirationDate) return 1;
+      if (!b.expirationDate) return -1;
+      
+      const dateA = new Date(a.expirationDate).getTime();
+      const dateB = new Date(b.expirationDate).getTime();
+      
+      return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+    });
+  }, [filteredInstances, sortOrder]);
+
+  // Fonction pour inverser l'ordre de tri
+  const toggleSortOrder = useCallback(() => {
+    setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc');
+  }, []);
 
   return (
     <MainLayout>
@@ -178,169 +256,123 @@ export default function InventoryPage() {
           )}
 
           {/* Filtres et recherche */}
-          <Card>
-            <CardContent className="pt-6">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <Search className="h-5 w-5 text-gray-400" />
-                  </div>
-                  <input
-                    type="text"
-                    placeholder="Rechercher un produit..."
-                    className="pl-10 w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <select
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md"
-                    value={categoryFilter}
-                    onChange={(e) => setCategoryFilter(e.target.value)}
-                  >
-                    <option value="">Toutes les catégories</option>
-                    {allCategories.map(category => (
-                      <option key={category} value={category}>{category}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <select
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md"
-                    value={locationFilter}
-                    onChange={(e) => setLocationFilter(e.target.value)}
-                  >
-                    <option value="">Tous les emplacements</option>
-                    {allLocations.map(location => (
-                      <option key={location} value={location}>{location}</option>
-                    ))}
-                  </select>
-                </div>
-                <div className="flex space-x-2">
-                  <Button 
-                    variant={showExpiredOnly ? "default" : "outline"} 
-                    size="sm"
-                    onClick={() => {
-                      setShowExpiredOnly(!showExpiredOnly);
-                      if (!showExpiredOnly) setShowExpiringSoonOnly(false);
-                    }}
-                    className={showExpiredOnly ? "bg-red-500 hover:bg-red-600" : ""}
-                  >
-                    <AlertTriangle className="w-4 h-4 mr-1" />
-                    Périmés
-                  </Button>
-                  <Button 
-                    variant={showExpiringSoonOnly ? "default" : "outline"} 
-                    size="sm"
-                    onClick={() => {
-                      setShowExpiringSoonOnly(!showExpiringSoonOnly);
-                      if (!showExpiringSoonOnly) setShowExpiredOnly(false);
-                    }}
-                    className={showExpiringSoonOnly ? "bg-yellow-500 hover:bg-yellow-600" : ""}
-                  >
-                    <Calendar className="w-4 h-4 mr-1" />
-                    Bientôt
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <div className="flex flex-col md:flex-row gap-4 items-start">
+            <div className="flex-1">
+              <SearchAndFilterBar
+                searchTerm={searchTerm}
+                onSearchChange={setSearchTerm}
+                sortOrder={sortOrder}
+                onSortToggle={toggleSortOrder}
+                sortLabel={{
+                  asc: 'Date d\'expiration croissante',
+                  desc: 'Date d\'expiration décroissante'
+                }}
+                searchPlaceholder="Rechercher un produit..."
+              />
+            </div>
+            <AdvancedFilters
+              filterGroups={filterGroups}
+              onFilterChange={handleFilterChange}
+              onResetFilters={resetFilters}
+              activeFiltersCount={activeFiltersCount}
+            />
+          </div>
 
           {/* Liste des produits */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Inventaire ({sortedInstances.length} produits)</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {sortedInstances.length === 0 ? (
-                <div className="text-center py-8">
-                  <Package className="mx-auto h-12 w-12 text-gray-400" />
-                  <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">Aucun produit trouvé</h3>
-                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                    Ajoutez des produits à votre inventaire ou modifiez vos filtres.
-                  </p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                  {sortedInstances.map(instance => {
-                    const product = getProductDetails(instance);
-                    if (!product) return null;
-                    
-                    const expired = instance.expirationDate ? isExpired(instance) : false;
-                    const daysLeft = instance.expirationDate ? daysUntilExpiration(instance) : null;
-                    
-                    return (
-                      <div 
-                        key={instance.id} 
-                        className={cn(
-                          "relative border rounded-lg overflow-hidden transition-all hover:shadow-md",
-                          expired ? "bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800" : 
-                          daysLeft !== null && daysLeft <= 7 ? "bg-yellow-50 border-yellow-200 dark:bg-yellow-900/20 dark:border-yellow-800" : 
-                          "bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
-                        )}
-                      >
-                        <Link 
-                          href={`/products/${product.id}`}
-                          className="block p-4"
-                        >
-                          <div className="flex flex-col">
-                            <div className="flex items-center justify-between">
-                              <h3 className="font-medium text-gray-900 dark:text-gray-100 truncate">{product.name}</h3>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild onClick={(e: React.MouseEvent) => e.preventDefault()}>
-                                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                                    <MoreVertical className="h-4 w-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem>
-                                    <RefreshCw className="w-4 h-4 mr-2" />
-                                    Mettre à jour
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem className="text-red-500 focus:text-red-500">
-                                    <Trash2 className="w-4 h-4 mr-2" />
-                                    Supprimer
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </div>
-                            <div className="mt-2 flex flex-col gap-1 text-sm text-gray-500 dark:text-gray-400">
-                              <span className="flex items-center">
-                                <Package className="w-4 h-4 mr-1 flex-shrink-0" />
-                                <span className="truncate">{instance.quantity} {instance.unit}</span>
-                              </span>
-                              {instance.location && (
-                                <span className="flex items-center">
-                                  <MapPin className="w-4 h-4 mr-1 flex-shrink-0" />
-                                  <span className="truncate">{instance.location}</span>
-                                </span>
-                              )}
-                              {instance.expirationDate && (
-                                <span className={cn(
-                                  "flex items-center",
-                                  expired ? "text-red-500" : 
-                                  daysLeft !== null && daysLeft <= 7 ? "text-yellow-500" : ""
-                                )}>
-                                  <Calendar className="w-4 h-4 mr-1 flex-shrink-0" />
-                                  <span className="truncate">
-                                    {expired 
-                                      ? `Expiré depuis le ${formatDate(instance.expirationDate)}` 
-                                      : `Expire le ${formatDate(instance.expirationDate)}${daysLeft !== null ? ` (${daysLeft} j)` : ''}`
-                                    }
-                                  </span>
-                                </span>
-                              )}
-                            </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {sortedInstances.length === 0 ? (
+              <div className="col-span-full text-center py-10">
+                <p className="text-gray-500 mb-4">
+                  Aucun produit ne correspond à vos critères de recherche
+                </p>
+                <Button variant="outline" onClick={resetFilters}>
+                  <RefreshCw className="w-4 h-4 mr-2" />
+                  Réinitialiser les filtres
+                </Button>
+              </div>
+            ) : (
+              sortedInstances.map(instance => {
+                const product = getProductDetails(instance);
+                if (!product) return null;
+                
+                const isProductExpired = isExpired(instance);
+                const daysUntilExpiry = instance.expirationDate ? daysUntilExpiration(instance) : null;
+                const isExpiringSoon = daysUntilExpiry !== null && daysUntilExpiry <= 7 && daysUntilExpiry > 0;
+                
+                return (
+                  <Link href={`/products/${instance.id}`} key={instance.id}>
+                    <Card className={cn(
+                      "hover:shadow-md transition-all duration-200 cursor-pointer border-l-4",
+                      isProductExpired ? "border-l-red-500" : 
+                      isExpiringSoon ? "border-l-yellow-500" : 
+                      "border-l-green-500"
+                    )}>
+                      <CardContent className="p-4">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h3 className="font-medium text-lg">{product.name}</h3>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                              {instance.quantity} {instance.unit}
+                            </p>
                           </div>
-                        </Link>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                                <MoreVertical className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem>Modifier</DropdownMenuItem>
+                              <DropdownMenuItem className="text-red-600">Supprimer</DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                        
+                        <div className="mt-4 space-y-2">
+                          <div className="flex items-center text-sm">
+                            <Package className="w-4 h-4 mr-2 text-gray-400" />
+                            <span>{product.category}</span>
+                          </div>
+                          
+                          {instance.location && (
+                            <div className="flex items-center text-sm">
+                              <MapPin className="w-4 h-4 mr-2 text-gray-400" />
+                              <span>{instance.location}</span>
+                            </div>
+                          )}
+                          
+                          {instance.expirationDate && (
+                            <div className={cn(
+                              "flex items-center text-sm",
+                              isProductExpired ? "text-red-600 dark:text-red-400" : 
+                              isExpiringSoon ? "text-yellow-600 dark:text-yellow-400" : 
+                              ""
+                            )}>
+                              <Calendar className={cn(
+                                "w-4 h-4 mr-2",
+                                isProductExpired ? "text-red-600 dark:text-red-400" : 
+                                isExpiringSoon ? "text-yellow-600 dark:text-yellow-400" : 
+                                "text-gray-400"
+                              )} />
+                              <span>
+                                {isProductExpired ? (
+                                  <span className="font-medium">Périmé depuis le {dateFormatter.format(instance.expirationDate)}</span>
+                                ) : isExpiringSoon ? (
+                                  <span className="font-medium">Expire {daysUntilExpiry === 1 ? 'demain' : `dans ${daysUntilExpiry} jours`}</span>
+                                ) : (
+                                  <span>Expire le {dateFormatter.format(instance.expirationDate)}</span>
+                                )}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                );
+              })
+            )}
+          </div>
         </div>
       </div>
     </MainLayout>
