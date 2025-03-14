@@ -1,15 +1,10 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState } from 'react';
+import { Theme, ThemeContextType } from '@/types';
+import { isClient, getFromLocalStorage, setToLocalStorage } from '@/lib/utils';
 
-type Theme = 'light' | 'dark' | 'system';
-
-interface ThemeContextType {
-  theme: Theme;
-  setTheme: (theme: Theme) => void;
-}
-
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
+export const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   // Récupérer le thème depuis le localStorage ou utiliser 'system' par défaut
@@ -17,14 +12,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   
   // Effet pour charger le thème depuis localStorage au montage du composant
   useEffect(() => {
-    const storedTheme = localStorage.getItem('theme') as Theme | null;
-    if (storedTheme) {
+    if (isClient) {
+      const storedTheme = getFromLocalStorage<Theme>('theme', 'system');
       setTheme(storedTheme);
     }
   }, []);
   
   // Effet pour appliquer le thème au document
   useEffect(() => {
+    if (!isClient) return;
+    
     const root = window.document.documentElement;
     
     // Supprimer les classes de thème existantes
@@ -39,23 +36,23 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
     
     // Sauvegarder le thème dans localStorage
-    localStorage.setItem('theme', theme);
+    setToLocalStorage('theme', theme);
   }, [theme]);
   
   // Effet pour écouter les changements de préférence système
   useEffect(() => {
-    if (theme === 'system') {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      
-      const handleChange = () => {
-        const root = window.document.documentElement;
-        root.classList.remove('light', 'dark');
-        root.classList.add(mediaQuery.matches ? 'dark' : 'light');
-      };
-      
-      mediaQuery.addEventListener('change', handleChange);
-      return () => mediaQuery.removeEventListener('change', handleChange);
-    }
+    if (!isClient || theme !== 'system') return;
+    
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    const handleChange = () => {
+      const root = window.document.documentElement;
+      root.classList.remove('light', 'dark');
+      root.classList.add(mediaQuery.matches ? 'dark' : 'light');
+    };
+    
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
   }, [theme]);
   
   const value = {

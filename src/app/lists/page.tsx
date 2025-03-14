@@ -10,13 +10,13 @@ import { ToastContext } from '@/components/ui/toast';
 import { cn } from '@/lib/utils';
 import ShoppingListCard from '@/components/ShoppingListCard';
 import Link from 'next/link';
-import { useShoppingLists } from '@/contexts/ShoppingListContext';
+import { useShoppingList } from '@/hooks/useShoppingList';
 
 type TabOption = 'all' | 'active' | 'completed';
 
 export default function ListsPage() {
   const { showToast } = useContext(ToastContext);
-  const { lists, deleteList } = useShoppingLists();
+  const { lists, deleteList } = useShoppingList();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [activeTab, setActiveTab] = useState<TabOption>('all');

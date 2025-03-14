@@ -1,25 +1,17 @@
 'use client';
 
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { ShoppingList, shoppingLists as initialShoppingLists } from '@/data/shopping-lists';
+import React, { createContext, useState, useEffect } from 'react';
+import { shoppingLists as initialShoppingLists } from '@/data/shopping-lists';
+import { ShoppingList, ShoppingListContextType } from '@/types';
+import { isClient, getFromLocalStorage, setToLocalStorage, generateId } from '@/lib/utils';
 
-interface ShoppingListContextType {
-  lists: ShoppingList[];
-  addList: (list: Omit<ShoppingList, 'id' | 'createdAt' | 'updatedAt'>) => string;
-  updateList: (list: ShoppingList) => void;
-  deleteList: (id: string) => void;
-  getList: (id: string) => ShoppingList | undefined;
-}
-
-const ShoppingListContext = createContext<ShoppingListContextType>({
+export const ShoppingListContext = createContext<ShoppingListContextType>({
   lists: [],
   addList: () => '',
   updateList: () => {},
   deleteList: () => {},
   getList: () => undefined,
 });
-
-export const useShoppingLists = () => useContext(ShoppingListContext);
 
 export function ShoppingListProvider({ children }: { children: React.ReactNode }) {
   // Utiliser localStorage pour persister les listes entre les sessions
@@ -28,27 +20,17 @@ export function ShoppingListProvider({ children }: { children: React.ReactNode }
   
   // Charger les listes depuis localStorage au démarrage
   useEffect(() => {
-    // Vérifier si nous sommes dans un environnement navigateur
-    if (typeof window !== 'undefined') {
-      const savedLists = localStorage.getItem('shoppingLists');
-      if (savedLists) {
-        try {
-          setLists(JSON.parse(savedLists));
-        } catch (error) {
-          console.error('Erreur lors du chargement des listes:', error);
-          setLists(initialShoppingLists);
-        }
-      } else {
-        setLists(initialShoppingLists);
-      }
+    if (isClient) {
+      const savedLists = getFromLocalStorage<ShoppingList[]>('shoppingLists', initialShoppingLists);
+      setLists(savedLists);
       setIsInitialized(true);
     }
   }, []);
   
   // Sauvegarder les listes dans localStorage à chaque modification
   useEffect(() => {
-    if (isInitialized && typeof window !== 'undefined') {
-      localStorage.setItem('shoppingLists', JSON.stringify(lists));
+    if (isInitialized && isClient) {
+      setToLocalStorage('shoppingLists', lists);
       console.log('Listes sauvegardées:', lists);
     }
   }, [lists, isInitialized]);
@@ -56,7 +38,7 @@ export function ShoppingListProvider({ children }: { children: React.ReactNode }
   // Ajouter une nouvelle liste
   const addList = (listData: Omit<ShoppingList, 'id' | 'createdAt' | 'updatedAt'>) => {
     const now = new Date().toISOString();
-    const newId = `list-${Date.now()}`;
+    const newId = generateId('list');
     const newList: ShoppingList = {
       ...listData,
       id: newId,

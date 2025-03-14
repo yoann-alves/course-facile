@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Moon, Sun, Monitor } from 'lucide-react';
-import { useTheme } from '@/contexts/ThemeContext';
+import { useTheme } from '@/hooks/useTheme';
 import {
   Select,
   SelectContent,
@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Theme } from '@/contexts/ThemeContext';
 
 export function ThemeSelector() {
   const { theme, setTheme } = useTheme();
@@ -18,7 +19,7 @@ export function ThemeSelector() {
     <Select
       value={theme}
       onValueChange={(value) => {
-        setTheme(value as 'light' | 'dark' | 'system');
+        setTheme(value as Theme);
       }}
     >
       <SelectTrigger className="w-full">

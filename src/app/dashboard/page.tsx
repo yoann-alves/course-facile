@@ -13,11 +13,11 @@ import MainLayout from '@/components/layout/MainLayout';
 import ShoppingListCard from '@/components/ShoppingListCard';
 import { Card } from '@/components/ui/card';
 import { getCompletedItemCount } from '@/data/shopping-lists';
-import { useShoppingLists } from '@/contexts/ShoppingListContext';
+import { useShoppingList } from '@/hooks/useShoppingList';
 import { Button } from '@/components/ui/button';
 
 export default function DashboardPage() {
-  const { lists, deleteList } = useShoppingLists();
+  const { lists, deleteList } = useShoppingList();
   
   // Gérer la suppression d'une liste
   const handleDeleteList = (id: string) => {

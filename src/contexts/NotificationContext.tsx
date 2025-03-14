@@ -3,35 +3,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { expirationItems, isExpiringSoon, isExpired } from '@/data/expiration-items';
 import { Bell, AlertTriangle, Info } from 'lucide-react';
+import { Notification, NotificationContextType } from '@/types';
+import { generateId } from '@/lib/utils';
 
-// Type pour une notification
-export interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  icon: React.ElementType;
-  bgClass: string;
-  borderClass: string;
-  iconBgClass: string;
-  iconColorClass: string;
-  textColorClass: string;
-  actionColorClass: string;
-  href: string;
-  date: string;
-  read?: boolean;
-}
-
-type NotificationContextType = {
-  notificationCount: number;
-  showBadges: boolean;
-  toggleShowBadges: () => void;
-  notifications: Notification[];
-  markAsRead: (id: string) => void;
-  markAllAsRead: () => void;
-  deleteNotification: (id: string) => void;
-};
-
-const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
+export const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
   // État pour les notifications
@@ -99,7 +74,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     // Ajouter la notification pour les produits périmés si nécessaire
     if (hasExpiredItems) {
       newNotifications.push({
-        id: 'expired',
+        id: generateId('notification'),
         title: 'Attention : Produits périmés',
         message: `${expiredItems.length} produit${expiredItems.length > 1 ? 's' : ''} périmé${expiredItems.length > 1 ? 's' : ''}`,
         icon: AlertTriangle,
@@ -118,7 +93,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     // Ajouter la notification pour les produits qui arrivent à expiration si nécessaire
     if (hasExpiringSoonItems) {
       newNotifications.push({
-        id: 'expiring-soon',
+        id: generateId('notification'),
         title: 'Alerte : Bientôt périmés',
         message: `${expiringSoonItems.length} produit${expiringSoonItems.length > 1 ? 's' : ''} arrive${expiringSoonItems.length > 1 ? 'nt' : ''} à expiration`,
         icon: Bell,
@@ -136,7 +111,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     
     // Exemple de notification informative (pour démonstration)
     newNotifications.push({
-      id: 'info-example',
+      id: generateId('notification'),
       title: 'Information',
       message: 'Bienvenue dans votre centre de notifications',
       icon: Info,

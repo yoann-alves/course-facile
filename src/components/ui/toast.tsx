@@ -4,8 +4,8 @@ import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, CheckCircle, AlertCircle, Info, Loader2 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
-
-export type ToastType = 'success' | 'error' | 'info' | 'loading';
+import { ToastType, ToastContextType } from '@/types';
+import { TIMEOUTS } from '@/lib/constants';
 
 interface ToastProps {
   message: string;
@@ -32,7 +32,7 @@ export function Toast({ message, type, onClose }: ToastProps) {
     if (type !== 'loading') {
       const timer = setTimeout(() => {
         onClose();
-      }, 3000);
+      }, TIMEOUTS.TOAST);
       return () => clearTimeout(timer);
     }
   }, [type, onClose]);
@@ -50,16 +50,13 @@ export function Toast({ message, type, onClose }: ToastProps) {
         <button
           onClick={onClose}
           className="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+          aria-label="Fermer"
         >
           <X className="w-4 h-4" />
         </button>
       )}
     </motion.div>
   );
-}
-
-interface ToastContextType {
-  showToast: (message: string, type: ToastType) => void;
 }
 
 export const ToastContext = React.createContext<ToastContextType>({
