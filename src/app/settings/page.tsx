@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Bell, User, Share2, Save, Monitor, Info as InfoIcon } from 'lucide-react';
+import { Bell, User, Share2, Save, Monitor, Info as InfoIcon, Database, ListChecks, HelpCircle, Book, Mail, MessageSquare, FileText, Shield, Download, Upload } from 'lucide-react';
 import MainLayout from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,7 +10,7 @@ import { ThemeSelector } from '@/components/ThemeSelector';
 import { cn } from '@/lib/utils';
 
 // Définition des types d'onglets
-type TabType = 'profile' | 'appearance' | 'notifications' | 'sharing' | 'info';
+type TabType = 'account' | 'interface' | 'notifications' | 'data' | 'lists' | 'help';
 
 // Interface pour les onglets
 interface TabItem {
@@ -24,15 +24,16 @@ export default function SettingsPage() {
   
   // Liste des onglets disponibles
   const tabs: TabItem[] = [
-    { id: 'profile', label: 'Profil', icon: User },
-    { id: 'appearance', label: 'Apparence', icon: Monitor },
+    { id: 'account', label: 'Compte', icon: User },
+    { id: 'interface', label: 'Interface', icon: Monitor },
     { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'sharing', label: 'Partage', icon: Share2 },
-    { id: 'info', label: 'Informations', icon: InfoIcon },
+    { id: 'data', label: 'Données', icon: Database },
+    { id: 'lists', label: 'Listes', icon: ListChecks },
+    { id: 'help', label: 'Aide', icon: HelpCircle },
   ];
   
   // État pour suivre l'onglet actif
-  const [activeTab, setActiveTab] = useState<TabType>('profile');
+  const [activeTab, setActiveTab] = useState<TabType>('account');
 
   return (
     <MainLayout>
@@ -66,13 +67,13 @@ export default function SettingsPage() {
 
           {/* Contenu des onglets */}
           <div className="mt-6">
-            {/* Onglet Profil */}
-            {activeTab === 'profile' && (
+            {/* Onglet Compte */}
+            {activeTab === 'account' && (
               <Card>
                 <CardContent className="pt-6">
                   <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
                     <User className="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
-                    Profil
+                    Compte
                   </h2>
                   <form className="space-y-4">
                     <div>
@@ -84,7 +85,6 @@ export default function SettingsPage() {
                         id="name"
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-800 dark:text-gray-100"
                         placeholder="Votre nom"
-                        defaultValue="Jean Dupont"
                       />
                     </div>
                     <div>
@@ -96,8 +96,19 @@ export default function SettingsPage() {
                         id="email"
                         className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-800 dark:text-gray-100"
                         placeholder="Votre email"
-                        defaultValue="jean.dupont@example.com"
                       />
+                    </div>
+                    <div>
+                      <label htmlFor="language" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                        Langue
+                      </label>
+                      <select
+                        id="language"
+                        className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-800 dark:text-gray-100"
+                      >
+                        <option value="fr">Français</option>
+                        <option value="en">English</option>
+                      </select>
                     </div>
                     <div className="pt-2 flex justify-end">
                       <Button>
@@ -110,19 +121,27 @@ export default function SettingsPage() {
               </Card>
             )}
 
-            {/* Onglet Apparence */}
-            {activeTab === 'appearance' && (
+            {/* Onglet Interface */}
+            {activeTab === 'interface' && (
               <Card>
                 <CardContent className="pt-6">
                   <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
                     <Monitor className="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
-                    Apparence
+                    Interface
                   </h2>
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     <div>
                       <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-2">Thème</h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">Choisissez le thème de l'application</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">Choisissez le thème de l&apos;application</p>
                       <ThemeSelector />
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-2">Format de date</h3>
+                      <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md">
+                        <option value="fr">DD/MM/YYYY</option>
+                        <option value="en">MM/DD/YYYY</option>
+                        <option value="iso">YYYY-MM-DD</option>
+                      </select>
                     </div>
                   </div>
                 </CardContent>
@@ -137,69 +156,61 @@ export default function SettingsPage() {
                     <Bell className="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
                     Notifications
                   </h2>
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="font-medium text-gray-800 dark:text-gray-200">Afficher les badges de notification</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Afficher le nombre de notifications à côté de l&apos;icône de cloche</p>
+                  <div className="space-y-6">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="font-medium text-gray-800 dark:text-gray-200">Badges de notification</h3>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">Afficher le nombre de notifications non lues</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input 
+                            type="checkbox" 
+                            className="sr-only peer" 
+                            checked={showBadges}
+                            onChange={toggleShowBadges}
+                          />
+                          <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[&apos;&apos;] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                        </label>
                       </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input 
-                          type="checkbox" 
-                          className="sr-only peer" 
-                          checked={showBadges}
-                          onChange={toggleShowBadges}
-                        />
-                        <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[&apos;&apos;] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
-                      </label>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="font-medium text-gray-800 dark:text-gray-200">Alertes de péremption</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Recevoir des notifications pour les produits qui expirent bientôt</p>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="font-medium text-gray-800 dark:text-gray-200">Alertes de péremption</h3>
+                          <p className="text-sm text-gray-500 dark:text-gray-400">Notifications pour les produits qui expirent bientôt</p>
+                        </div>
+                        <label className="relative inline-flex items-center cursor-pointer">
+                          <input type="checkbox" className="sr-only peer" defaultChecked />
+                          <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[&apos;&apos;] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                        </label>
                       </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" className="sr-only peer" defaultChecked />
-                        <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[&apos;&apos;] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
-                      </label>
-                    </div>
-                    <div className="flex items-center justify-between">
                       <div>
-                        <h3 className="font-medium text-gray-800 dark:text-gray-200">Rappels de courses</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Recevoir des rappels pour les achats récurrents</p>
+                        <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-2">Délai d&apos;alerte de péremption</h3>
+                        <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md">
+                          <option value="1">1 jour avant</option>
+                          <option value="3">3 jours avant</option>
+                          <option value="7">1 semaine avant</option>
+                          <option value="14">2 semaines avant</option>
+                        </select>
                       </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" className="sr-only peer" defaultChecked />
-                        <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[&apos;&apos;] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
-                      </label>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="font-medium text-gray-800 dark:text-gray-200">Notifications par email</h3>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">Recevoir des notifications par email</p>
-                      </div>
-                      <label className="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" className="sr-only peer" />
-                        <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[&apos;&apos;] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
-                      </label>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             )}
 
-            {/* Onglet Partage */}
-            {activeTab === 'sharing' && (
+            {/* Onglet Données */}
+            {activeTab === 'data' && (
               <Card>
                 <CardContent className="pt-6">
                   <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
-                    <Share2 className="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
-                    Partage
+                    <Database className="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
+                    Données
                   </h2>
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     <div>
                       <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-2">Membres de la famille</h3>
                       <div className="space-y-2">
+                        {/* Liste des membres */}
                         <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-md">
                           <div>
                             <span className="font-medium dark:text-gray-200">Marie Dupont</span>
@@ -209,66 +220,138 @@ export default function SettingsPage() {
                             Supprimer
                           </Button>
                         </div>
-                        <div className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-800 rounded-md">
-                          <div>
-                            <span className="font-medium dark:text-gray-200">Pierre Dupont</span>
-                            <span className="text-sm text-gray-500 dark:text-gray-400 ml-2">pierre.dupont@example.com</span>
-                          </div>
-                          <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20">
-                            Supprimer
-                          </Button>
+                      </div>
+                      <div className="mt-4">
+                        <div className="flex space-x-2">
+                          <input
+                            type="email"
+                            className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md"
+                            placeholder="Email du membre"
+                          />
+                          <Button>Inviter</Button>
                         </div>
                       </div>
                     </div>
-                    <div>
-                      <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-2">Inviter un membre</h3>
-                      <div className="flex space-x-2">
-                        <input
-                          type="email"
-                          className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 dark:bg-gray-800 dark:text-gray-100"
-                          placeholder="Email"
-                        />
-                        <Button>
-                          Inviter
-                        </Button>
-                      </div>
+                    <div className="space-y-2">
+                      <Button variant="outline" className="w-full">
+                        <Download className="w-4 h-4 mr-2" />
+                        Exporter mes données
+                      </Button>
+                      <Button variant="outline" className="w-full">
+                        <Upload className="w-4 h-4 mr-2" />
+                        Importer des données
+                      </Button>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             )}
 
-            {/* Onglet Informations */}
-            {activeTab === 'info' && (
+            {/* Onglet Listes */}
+            {activeTab === 'lists' && (
               <Card>
                 <CardContent className="pt-6">
                   <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
-                    <InfoIcon className="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
-                    Informations
+                    <ListChecks className="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
+                    Préférences des Listes
+                  </h2>
+                  <div className="space-y-6">
+                    <div>
+                      <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-2">Tri par défaut</h3>
+                      <select className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md">
+                        <option value="date-desc">Plus récent d&apos;abord</option>
+                        <option value="date-asc">Plus ancien d&apos;abord</option>
+                        <option value="name-asc">Alphabétique (A-Z)</option>
+                        <option value="name-desc">Alphabétique (Z-A)</option>
+                      </select>
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-2">Unités par défaut</h3>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-700 dark:text-gray-300">Liquides</span>
+                          <select className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md">
+                            <option value="L">Litres (L)</option>
+                            <option value="ml">Millilitres (ml)</option>
+                          </select>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-700 dark:text-gray-300">Poids</span>
+                          <select className="px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md">
+                            <option value="kg">Kilogrammes (kg)</option>
+                            <option value="g">Grammes (g)</option>
+                          </select>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="font-medium text-gray-800 dark:text-gray-200">Archiver automatiquement</h3>
+                        <p className="text-sm text-gray-500 dark:text-gray-400">Archiver les listes terminées après 30 jours</p>
+                      </div>
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" className="sr-only peer" defaultChecked />
+                        <div className="w-11 h-6 bg-gray-200 dark:bg-gray-700 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-green-300 dark:peer-focus:ring-green-800 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[&apos;&apos;] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                      </label>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Onglet Aide */}
+            {activeTab === 'help' && (
+              <Card>
+                <CardContent className="pt-6">
+                  <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4 flex items-center">
+                    <HelpCircle className="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
+                    Aide et Support
                   </h2>
                   <div className="space-y-4">
                     <div>
-                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Version de l&apos;application</h4>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">1.0.0</p>
+                      <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-2">Documentation</h3>
+                      <div className="space-y-2">
+                        <Button variant="outline" className="w-full justify-start">
+                          <Book className="w-4 h-4 mr-2" />
+                          Guide d&apos;utilisation
+                        </Button>
+                        <Button variant="outline" className="w-full justify-start">
+                          <HelpCircle className="w-4 h-4 mr-2" />
+                          FAQ
+                        </Button>
+                      </div>
                     </div>
                     <div>
-                      <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Dernière mise à jour</h4>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">13 mars 2023</p>
-                    </div>
-                    <div className="pt-4">
-                      <Button variant="outline" className="w-full">
-                        Conditions d&apos;utilisation
-                      </Button>
+                      <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-2">Support</h3>
+                      <div className="space-y-2">
+                        <Button variant="outline" className="w-full justify-start">
+                          <Mail className="w-4 h-4 mr-2" />
+                          Contacter le support
+                        </Button>
+                        <Button variant="outline" className="w-full justify-start">
+                          <MessageSquare className="w-4 h-4 mr-2" />
+                          Chat en direct
+                        </Button>
+                      </div>
                     </div>
                     <div>
-                      <Button variant="outline" className="w-full">
-                        Politique de confidentialité
-                      </Button>
+                      <h3 className="font-medium text-gray-800 dark:text-gray-200 mb-2">Informations légales</h3>
+                      <div className="space-y-2">
+                        <Button variant="outline" className="w-full justify-start">
+                          <FileText className="w-4 h-4 mr-2" />
+                          Conditions d&apos;utilisation
+                        </Button>
+                        <Button variant="outline" className="w-full justify-start">
+                          <Shield className="w-4 h-4 mr-2" />
+                          Politique de confidentialité
+                        </Button>
+                      </div>
                     </div>
                     <div className="pt-4">
-                      <Button variant="ghost" className="w-full text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20">
-                        Déconnexion
-                      </Button>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                        <p>Version de l'application : 1.0.0</p>
+                        <p>Dernière mise à jour : 13 mars 2024</p>
+                      </div>
                     </div>
                   </div>
                 </CardContent>

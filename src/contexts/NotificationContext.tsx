@@ -109,7 +109,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         iconColorClass: 'text-red-600',
         textColorClass: 'text-red-600',
         actionColorClass: 'text-red-600',
-        href: '/manage-expirations',
+        href: '/inventory',
         date: new Date().toISOString(),
         read: false
       });
@@ -128,7 +128,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         iconColorClass: 'text-amber-600',
         textColorClass: 'text-amber-600',
         actionColorClass: 'text-amber-600',
-        href: '/manage-expirations',
+        href: '/inventory',
         date: new Date().toISOString(),
         read: false
       });

@@ -6,7 +6,8 @@ import {
   Plus, 
   Copy, 
   ListChecks, 
-  Settings
+  Settings,
+  Package
 } from 'lucide-react';
 import MainLayout from '@/components/layout/MainLayout';
 import ShoppingListCard from '@/components/ShoppingListCard';
@@ -36,15 +37,6 @@ export default function DashboardPage() {
       href: '/create-list'
     },
     {
-      id: 'duplicate-list',
-      title: 'Dupliquer',
-      description: 'Copier une liste existante',
-      icon: Copy,
-      bgColor: 'bg-blue-100',
-      iconColor: 'text-blue-600',
-      href: '/create-list?tab=duplicate'
-    },
-    {
       id: 'all-lists',
       title: 'Toutes les listes',
       description: 'Voir toutes vos listes',
@@ -52,6 +44,24 @@ export default function DashboardPage() {
       bgColor: 'bg-purple-100',
       iconColor: 'text-purple-600',
       href: '/lists'
+    },
+    {
+      id: 'inventory',
+      title: 'Stocks',
+      description: 'Gérer votre inventaire',
+      icon: Package,
+      bgColor: 'bg-amber-100',
+      iconColor: 'text-amber-600',
+      href: '/inventory'
+    },
+    {
+      id: 'duplicate-list',
+      title: 'Dupliquer',
+      description: 'Copier une liste existante',
+      icon: Copy,
+      bgColor: 'bg-blue-100',
+      iconColor: 'text-blue-600',
+      href: '/create-list?tab=duplicate'
     },
     {
       id: 'settings',
@@ -79,7 +89,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Raccourcis rapides */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {quickActions.map((action) => (
               <Link key={action.id} href={action.href} className="block">
                 <Card className="hover:shadow-md transition-shadow border-transparent hover:border-gray-200">

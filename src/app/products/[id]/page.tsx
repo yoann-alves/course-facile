@@ -59,9 +59,9 @@ export default function ProductDetailPage({ params }: PageProps) {
         <div className="flex flex-col items-center justify-center h-full">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">Produit introuvable</h1>
           <p className="text-gray-600 mb-6">Le produit que vous recherchez n&apos;existe pas ou a été supprimé.</p>
-          <Button onClick={() => router.push('/manage-expirations')}>
+          <Button onClick={() => router.push('/inventory')}>
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Retour aux produits
+            Retour à l&apos;inventaire
           </Button>
         </div>
       </MainLayout>
@@ -95,7 +95,7 @@ export default function ProductDetailPage({ params }: PageProps) {
             <Button 
               variant="ghost" 
               size="sm" 
-              onClick={() => router.push('/manage-expirations')}
+              onClick={() => router.push('/inventory')}
               className="mr-2"
             >
               <ArrowLeft className="w-4 h-4" />
