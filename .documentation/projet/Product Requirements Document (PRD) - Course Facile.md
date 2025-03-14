@@ -1,6 +1,6 @@
 # Product Requirements Document (PRD) - Course Facile
 
-*Date de dernière mise à jour: 13/03/2025*
+*Date de dernière mise à jour: 14/03/2025*
 
 ## 1. Elevator Pitch
 Course Facile est une application web conçue pour aider les utilisateurs à gérer leurs courses de manière efficace et collaborative. Elle permet de créer des listes de courses, de suivre les dates de péremption des aliments, et d'éviter le gaspillage tout en économisant de l'argent. Grâce à une interface intuitive et moderne, les utilisateurs peuvent facilement partager des listes avec leur famille et recevoir des notifications personnalisées.
@@ -33,12 +33,12 @@ L'interface de l'application sera moderne et minimaliste, avec une palette de co
 - Une barre latérale (sidebar) pour accéder facilement à toutes les fonctionnalités principales, notamment :
   - Tableau de bord
   - Toutes les listes
-  - Création de liste
   - Gestion des péremptions
   - Paramètres
 - Des formulaires simples pour la création et la gestion des listes et des produits.
 - Des sections dédiées pour la gestion des péremptions et des stocks.
 - Un système de notifications clair et accessible.
+- Support du mode sombre pour une meilleure expérience utilisateur.
 
 ## 6. État d'Implémentation Actuel
 - **Implémenté** :
@@ -46,12 +46,22 @@ L'interface de l'application sera moderne et minimaliste, avec une palette de co
   - Navigation via la barre latérale (sidebar)
   - Page de visualisation de toutes les listes avec options de filtrage et de tri
   - Interface responsive pour mobile et desktop
+  - Mode sombre avec adaptation complète de tous les composants
+  - Modale de création rapide de liste avec plusieurs méthodes (recherche, produits récents, duplication)
+  - Page de détail d'une liste avec affichage des produits par catégorie
+  - Page de détail d'un produit avec gestion des instances et dates de péremption
+  - Composants de filtrage avancés (SearchAndFilterBar, TabFilters, AdvancedFilters)
+  - Hooks personnalisés pour la gestion des filtres (useFilters, useAdvancedFilters)
   
 - **En cours de développement** :
-  - Fonctionnalités de création et de modification des listes
-  - Gestion des dates de péremption
+  - Optimisation des composants de filtrage (debounce, historique, statistiques)
+  - Amélioration des fonctionnalités d'édition des listes et des produits
+  - Optimisation de l'expérience utilisateur globale
   
 - **À implémenter** :
-  - Partage de listes
-  - Notifications
+  - Partage de listes avec d'autres utilisateurs
+  - Système de notifications pour les produits bientôt périmés
   - Intégration avec un backend pour la persistance des données
+  - Authentification des utilisateurs
+  - Fonctionnalités avancées (suivi des prix, statistiques, etc.)
+  - Intégrations externes (services de livraison, assistants vocaux, etc.)

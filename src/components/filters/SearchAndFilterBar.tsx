@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Search, ArrowUpDown, X, RotateCcw } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+'use client';
+
+import React from 'react';
 import { cn } from '@/lib/utils';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import SearchInput from './SearchInput';
+import SortButton from './SortButton';
+import FilterStats from './FilterStats';
+import ResetButton from './ResetButton';
+import SortSelect from './SortSelect';
 
 interface SearchAndFilterBarProps {
   searchTerm: string;
@@ -51,32 +54,10 @@ export default function SearchAndFilterBar({
   showResetButton = true,
   sortField,
   onSortFieldChange,
-  sortFields,
+  sortFields = [],
   filterStats
 }: SearchAndFilterBarProps) {
-  const [localSearchTerm, setLocalSearchTerm] = useState(searchTerm);
-  
-  // Effet pour le debounce de la recherche
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      if (localSearchTerm !== searchTerm) {
-        onSearchChange(localSearchTerm);
-      }
-    }, debounceMs);
-    
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [localSearchTerm, searchTerm, onSearchChange, debounceMs]);
-  
-  // Mettre à jour le terme de recherche local lorsque le terme de recherche externe change
-  useEffect(() => {
-    setLocalSearchTerm(searchTerm);
-  }, [searchTerm]);
-  
-  // Gérer la réinitialisation de la recherche
-  const handleResetSearch = () => {
-    setLocalSearchTerm('');
+  const handleReset = () => {
     if (onResetSearch) {
       onResetSearch();
     } else {
@@ -86,92 +67,45 @@ export default function SearchAndFilterBar({
 
   return (
     <div className={cn("flex flex-col sm:flex-row gap-2", className)}>
-      <div className="relative flex-1">
-        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-gray-500 dark:text-gray-400" />
-        <Input
-          type="text"
-          placeholder={searchPlaceholder}
-          value={localSearchTerm}
-          onChange={(e) => setLocalSearchTerm(e.target.value)}
-          className="pl-9 pr-10"
-        />
-        {showResetButton && localSearchTerm && (
-          <button
-            type="button"
-            onClick={handleResetSearch}
-            className="absolute right-2.5 top-2.5 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
-          >
-            <X className="h-4 w-4" />
-          </button>
-        )}
-      </div>
+      <SearchInput
+        value={searchTerm}
+        onChange={onSearchChange}
+        placeholder={searchPlaceholder}
+        debounceMs={debounceMs}
+        onReset={onResetSearch}
+        showResetButton={false} // Nous gérons le bouton de réinitialisation séparément
+      />
       
       <div className="flex gap-2">
-        {sortFields && sortField && onSortFieldChange && (
-          <select
+        {sortFields.length > 0 && sortField && onSortFieldChange && (
+          <SortSelect
             value={sortField}
-            onChange={(e) => onSortFieldChange(e.target.value)}
-            className="h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          >
-            {sortFields.map((field) => (
-              <option key={field.id} value={field.id}>
-                {field.label}
-              </option>
-            ))}
-          </select>
+            onChange={onSortFieldChange}
+            options={sortFields}
+          />
         )}
         
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={onSortToggle}
-                className="h-10 w-10"
-              >
-                <ArrowUpDown className={cn(
-                  "h-4 w-4 transition-transform",
-                  sortOrder === 'asc' ? "rotate-0" : "rotate-180"
-                )} />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{sortOrder === 'asc' ? sortLabel.asc : sortLabel.desc}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <SortButton
+          sortOrder={sortOrder}
+          onSortToggle={onSortToggle}
+          label={sortLabel}
+        />
         
         {showResetButton && searchTerm && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={handleResetSearch}
-                  className="h-10 w-10"
-                >
-                  <RotateCcw className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Réinitialiser la recherche</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+          <ResetButton
+            onClick={handleReset}
+            tooltipText="Réinitialiser la recherche"
+          />
         )}
       </div>
       
       {filterStats && (
-        <div className="text-xs text-gray-500 mt-1 sm:mt-0 sm:ml-2 flex items-center">
-          {filterStats.filteredItemCount} sur {filterStats.totalItemCount} éléments
-          {filterStats.filterReductionPercent > 0 && (
-            <span className="ml-1">
-              (-{filterStats.filterReductionPercent}%)
-            </span>
-          )}
-        </div>
+        <FilterStats
+          filteredItemCount={filterStats.filteredItemCount}
+          totalItemCount={filterStats.totalItemCount}
+          filterReductionPercent={filterStats.filterReductionPercent}
+          className="mt-1 sm:mt-0 sm:ml-2"
+        />
       )}
     </div>
   );

@@ -6,7 +6,7 @@ import { Plus, Package, RefreshCw, Calendar, MapPin, MoreVertical } from 'lucide
 import MainLayout from '@/components/layout/MainLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { products, productInstances, isExpired, daysUntilExpiration, getProductDetails } from '@/data/products';
+import { products, productInstances, isExpired, daysUntilExpiration, getProductDetails, ProductInstance } from '@/data/products';
 import { cn } from '@/lib/utils';
 import { useFormatDate } from '@/hooks/useFormatDate';
 import {
@@ -79,14 +79,13 @@ export default function InventoryPage() {
     activeFiltersCount,
     handleFilterChange,
     resetFilters,
-    applyFilters
   } = useAdvancedFilters({
     initialFilterGroups,
     persistKey: 'inventory-filters'
   });
 
   // Fonction pour filtrer les produits en fonction des filtres avancés
-  const filterProductsByAdvancedFilters = useCallback((instance: any, groups: FilterGroup[]) => {
+  const filterProductsByAdvancedFilters = useCallback((instance: ProductInstance, groups: FilterGroup[]) => {
     const product = getProductDetails(instance);
     if (!product) return false;
 
@@ -100,7 +99,7 @@ export default function InventoryPage() {
     // Vérifier les filtres d'emplacement
     const locationGroup = groups.find(g => g.id === 'locations');
     const selectedLocations = locationGroup?.options.filter(o => o.checked).map(o => o.id);
-    if (selectedLocations && selectedLocations.length > 0 && !selectedLocations.includes(instance.location)) {
+    if (selectedLocations && selectedLocations.length > 0 && !selectedLocations.includes(instance.location || '')) {
       return false;
     }
 
@@ -122,22 +121,24 @@ export default function InventoryPage() {
 
   // Filtrer les instances de produits
   const filteredInstances = useMemo(() => {
-    // Appliquer d'abord les filtres avancés
-    const advancedFiltered = applyFilters(productInstances, filterProductsByAdvancedFilters);
-    
-    // Puis appliquer le filtre de recherche
-    return advancedFiltered.filter(instance => {
+    // Filtrer manuellement les instances en fonction des filtres avancés et de la recherche
+    return productInstances.filter(instance => {
+      // Vérifier si l'instance passe les filtres avancés
+      if (!filterProductsByAdvancedFilters(instance, filterGroups)) {
+        return false;
+      }
+      
+      // Vérifier le filtre de recherche
       const product = getProductDetails(instance);
       if (!product) return false;
       
-      // Filtre de recherche
       if (searchTerm && !product.name.toLowerCase().includes(searchTerm.toLowerCase())) {
         return false;
       }
       
       return true;
     });
-  }, [applyFilters, filterProductsByAdvancedFilters, searchTerm]);
+  }, [filterGroups, filterProductsByAdvancedFilters, searchTerm]);
 
   // Trier les instances par date d'expiration
   const sortedInstances = useMemo(() => {
